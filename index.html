@@ -11,7 +11,8 @@
             --surface: #ffffff;
             --text: #1a1a1a;
             --text-muted: #6e6e73;
-            --focus-bg: #007aff;
+            /* Changed from ugly blue to a sleek neutral dark */
+            --focus-bg: #333333; 
             --focus-text: #ffffff;
             --border: #e5e5ea;
         }
@@ -26,7 +27,13 @@
         body.size-medium { font-size: 12.5px; }
         body.size-large { font-size: 15px; }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            /* Prevents native web text selection for an app-like feel */
+            user-select: none;
+            -webkit-user-select: none;
+        }
         
         html, body {
             margin: 0; padding: 0;
@@ -37,13 +44,7 @@
 
         #app { display: flex; flex-direction: column; height: 100vh; position: relative; }
 
-        /* Header */
-        #header {
-            background: #1a1a1a; color: #fff; text-align: center;
-            padding: 6px 4px; font-weight: bold; font-size: 13px;
-            border-bottom: 1px solid #333; flex-shrink: 0;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
+        /* Header CSS removed as requested */
 
         /* Views */
         .view { display: none; flex: 1; overflow-y: auto; padding: 0; scrollbar-width: none; }
@@ -75,9 +76,17 @@
         }
 
         /* Compact News Cards */
-        .news-card-content { display: flex; gap: 8px; width: 100%; align-items: flex-start; }
+        .news-card-content { 
+            display: flex; 
+            gap: 8px; 
+            width: 100%; 
+            align-items: center; 
+            /* Space between pushes text left and thumbnail right */
+            justify-content: space-between; 
+        }
+        
         .news-thumbnail { width: 38px; height: 38px; border-radius: 3px; object-fit: cover; background: var(--border); flex-shrink: 0; }
-        .news-card-text { flex: 1; overflow: hidden; }
+        .news-card-text { flex: 1; overflow: hidden; text-align: left; }
         
         .news-title {
             font-weight: 600; font-size: 12px; line-height: 1.3; margin-bottom: 2px;
@@ -93,7 +102,7 @@
         .clickable-item:focus .cache-tick { color: #fff !important; }
 
         /* Full Text Reader */
-        #view-reader { padding: 10px 8px; }
+        #view-reader { padding: 10px 8px; user-select: text; -webkit-user-select: text; }
         #reader-title { font-size: 15px; font-weight: bold; margin: 0 0 4px 0; line-height: 1.3; }
         #reader-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
         .article-content p { line-height: 1.5; margin-bottom: 1em; }
@@ -121,8 +130,6 @@
 <body class="theme-light font-sans size-medium">
 
 <div id="app">
-    <div id="header">Latest News</div>
-
     <div id="view-home" class="view active">
         <div id="sync-status">Updating feeds...</div>
         <div id="home-list"></div>
@@ -168,9 +175,9 @@
     </div>
 
     <div class="softkey-bar">
-        <button class="softkey-btn" id="lsk-label" onclick="handleLSKClick()">Options</button>
+        <button class="softkey-btn" id="lsk-label" tabindex="-1" onclick="handleLSKClick()">Options</button>
         <div class="softkey-center" id="csk-label">Select</div>
-        <button class="softkey-btn" id="rsk-label" onclick="handleRSKClick()">Settings</button>
+        <button class="softkey-btn" id="rsk-label" tabindex="-1" onclick="handleRSKClick()">Settings</button>
     </div>
 </div>
 
@@ -254,33 +261,29 @@
     }
 
     // --- VIEWS & NAVIGATION ---
-    function setHeader(title) {
-        document.getElementById('header').innerText = title;
-    }
-
     function switchView(viewName, titleOverride = null) {
         state.currentView = viewName;
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(`view-${viewName}`).classList.add('active');
         
         // Handle UI changes per view
-        if(viewName === 'home') setHeader('Latest News');
-        else if(viewName === 'options') setHeader('Options');
-        else if(viewName === 'settings') { setHeader('Settings'); renderSettingsFeedToggles(); }
-        else if(viewName === 'channels') { setHeader('Channels'); renderChannelsList(); }
-        else if(viewName === 'headlines') setHeader(titleOverride || state.currentChannelName);
-        else if(viewName === 'reader') setHeader('Article');
+        if(viewName === 'settings') { renderSettingsFeedToggles(); }
+        else if(viewName === 'channels') { renderChannelsList(); }
 
-        // Focus first clickable item
+        // Focus first clickable item via custom JS navigation
         setTimeout(() => {
-            const focusTarget = document.getElementById(`view-${viewName}`).querySelector('button, input, select, .clickable-item');
-            if(focusTarget) focusTarget.focus();
+            const activeView = document.getElementById(`view-${viewName}`);
+            const focusTarget = activeView.querySelector('.clickable-item, input, select');
+            if(focusTarget) {
+                focusTarget.focus();
+                focusTarget.scrollIntoView({ block: 'nearest' });
+            }
         }, 50);
         
         updateSoftkeyLabels();
     }
 
-    // --- CHANNEL BROWSING (THE MISSING LOGIC) ---
+    // --- CHANNEL BROWSING ---
     function renderChannelsList() {
         const container = document.getElementById('channels-list');
         container.innerHTML = "";
@@ -307,7 +310,6 @@
         const container = document.getElementById('headlines-list');
         const cachedFeeds = JSON.parse(localStorage.getItem('rss_feed_cache') || '[]');
         
-        // Filter local cache just for this publisher
         const channelArticles = cachedFeeds.filter(a => a.source === feed.name);
         
         if (channelArticles.length > 0) {
@@ -394,7 +396,6 @@
             const finalFeeds = unique.slice(0, 60);
             safeSetItem('rss_feed_cache', JSON.stringify(finalFeeds));
             
-            // Only update DOM if we are still on home screen
             if (state.currentView === 'home') renderArticles(finalFeeds, container, false);
             
             startPrefetching(finalFeeds.slice(0, 15));
@@ -408,8 +409,6 @@
         container.innerHTML = "";
         articles.forEach(article => {
             const timeStr = formatTimeAgo(article.timestamp);
-            
-            // If in Channel view, don't repeat the source name
             const metaText = hideSource ? timeStr : (timeStr ? `${article.source} • ${timeStr}` : article.source);
             
             const thumbHtml = article.thumbnail 
@@ -421,13 +420,15 @@
             
             const card = document.createElement('button');
             card.className = "clickable-item";
+            
+            // Re-ordered so Text is first, Thumbnail is second (Right aligned)
             card.innerHTML = `
                 <div class="news-card-content">
-                    ${thumbHtml}
                     <div class="news-card-text">
                         <div class="news-title">${article.title}</div>
                         <div class="news-meta">${metaText}${tickHtml}</div>
                     </div>
+                    ${thumbHtml}
                 </div>
             `;
             card.onclick = () => loadFullArticle(article.link, article.title, metaText, article.desc);
@@ -588,6 +589,32 @@
     }
 
     // --- HARDWARE D-PAD NAVIGATION ---
+    
+    // Explicit custom focus script to prevent the browser from losing elements
+    function moveFocus(direction) {
+        const activeView = document.querySelector('.view.active');
+        if (!activeView) return;
+
+        // Find all elements that can be focused in the current view
+        const focusables = Array.from(activeView.querySelectorAll('.clickable-item, input, select'))
+                                .filter(el => el.offsetParent !== null);
+        
+        if (focusables.length === 0) return;
+
+        let currentIndex = focusables.indexOf(document.activeElement);
+        
+        if (direction === 1) { // ArrowDown
+            currentIndex = currentIndex + 1 < focusables.length ? currentIndex + 1 : focusables.length - 1;
+        } else if (direction === -1) { // ArrowUp
+            currentIndex = currentIndex - 1 >= 0 ? currentIndex - 1 : 0;
+        } else {
+            currentIndex = 0;
+        }
+        
+        focusables[currentIndex].focus();
+        focusables[currentIndex].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+
     function updateSoftkeyLabels() {
         const lsk = document.getElementById('lsk-label'), csk = document.getElementById('csk-label'), rsk = document.getElementById('rsk-label');
         const map = {
@@ -617,7 +644,7 @@
         if (state.currentView === "home") switchView('settings');
         else if (["options", "channels", "settings"].includes(state.currentView)) switchView('home');
         else if (state.currentView === "headlines") switchView('channels');
-        else if (state.currentView === "reader") window.history.back(); // Native back helps clear reader state, or fallback below
+        else if (state.currentView === "reader") switchView('home'); 
     }
 
     function setupPhysicalKeyBindings() {
@@ -635,17 +662,33 @@
                 }
             }
 
+            // Custom JS focus handling for D-Pad
+            if (['ArrowUp', 'ArrowDown'].includes(e.key)) {
+                if (state.currentView === 'reader') {
+                    // Allow native scrolling inside the reader view
+                    const readerView = document.getElementById('view-reader');
+                    readerView.scrollTop += (e.key === 'ArrowDown' ? 30 : -30);
+                    e.preventDefault(); 
+                } else {
+                    // Override default focus jumping for all list views
+                    e.preventDefault(); 
+                    moveFocus(e.key === 'ArrowDown' ? 1 : -1);
+                }
+                return;
+            }
+
+            // Ensure custom Enter behavior executes
+            if (e.key === 'Enter') {
+                if (document.activeElement && document.activeElement.click) {
+                    e.preventDefault();
+                    document.activeElement.click();
+                }
+            }
+
             // Shortcuts on home/options
             if (state.currentView === 'home' || state.currentView === 'options') {
                 if (e.key === '1') { e.preventDefault(); forceRefresh(); }
                 if (e.key === '2') { e.preventDefault(); switchView('channels'); }
-            }
-            
-            // Allow native D-Pad up/down to scroll the view if in reader
-            if (state.currentView === 'reader' && ['ArrowUp', 'ArrowDown'].includes(e.key)) {
-                // Let native browser scrolling happen inside the view
-                const readerView = document.getElementById('view-reader');
-                readerView.scrollTop += (e.key === 'ArrowDown' ? 30 : -30);
             }
         });
         
