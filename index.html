@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&family=Noto+Sans+Bengali:wght@400;600&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
-        /* Base Styling for Cloud Phone (240x320) */
         :root {
             --bg: #fafafa;
             --surface: #ffffff;
@@ -21,31 +20,20 @@
             --border: #e5e5ea;
         }
 
-        body.theme-dark { --bg: #000000; --surface: #111111; --text: #eeeeee; --text-muted: #999999; --border: #333333; --focus-bg: rgba(255, 255, 255, 0.25); }
-        body.theme-sepia { --bg: #f4ecd8; --surface: #fdf6e3; --text: #433422; --text-muted: #8f7762; --border: #e4d9c4; --focus-bg: rgba(208, 144, 80, 0.6); }
+        body.theme-dark  { --bg: #000000; --surface: #111111; --text: #eeeeee; --text-muted: #999999; --border: #333333; --focus-bg: rgba(255,255,255,0.25); }
+        body.theme-sepia { --bg: #f4ecd8; --surface: #fdf6e3; --text: #433422; --text-muted: #8f7762; --border: #e4d9c4; --focus-bg: rgba(208,144,80,0.6); }
 
-        /* Font Assignments */
         body.font-sans { font-family: "Open Sans", -apple-system, sans-serif; }
         body.font-noto { font-family: "Noto Sans Bengali", sans-serif; }
         body.font-hind { font-family: "Hind Siliguri", sans-serif; }
 
-        body.size-small { font-size: 11px; }
+        body.size-small  { font-size: 11px; }
         body.size-medium { font-size: 12.5px; }
-        body.size-large { font-size: 15px; }
+        body.size-large  { font-size: 15px; }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            user-select: none;
-            -webkit-user-select: none;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
         
-        html, body {
-            margin: 0; padding: 0;
-            width: 100%; height: 100%;
-            background: var(--bg); color: var(--text);
-            overflow: hidden; 
-        }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); color: var(--text); overflow: hidden; }
 
         #app { display: flex; flex-direction: column; height: 100vh; position: relative; }
 
@@ -61,10 +49,10 @@
             padding: 8px 6px; border: none; border-bottom: 1px solid var(--border);
             background: transparent; color: var(--text);
             font-size: inherit; font-family: inherit;
-            text-align: left; text-decoration: none; cursor: pointer; outline: none; margin: 0;
+            text-align: left; cursor: pointer; outline: none; margin: 0;
             border-radius: 0;
         }
-        
+
         input, select { border: 1px solid var(--border); padding: 6px; margin-bottom: 6px; background: var(--surface); }
 
         .clickable-item:focus, input:focus, select:focus, button:focus {
@@ -76,16 +64,8 @@
         .news-card-content { display: flex; gap: 8px; width: 100%; align-items: center; justify-content: space-between; }
         .news-thumbnail { width: 38px; height: 38px; border-radius: 3px; object-fit: cover; background: var(--border); flex-shrink: 0; }
         .news-card-text { flex: 1; overflow: hidden; text-align: left; }
-        
-        .news-title {
-            font-weight: 600; font-size: 12px; line-height: 1.3; margin-bottom: 2px;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;
-        }
-        .news-meta {
-            font-size: 10px; color: var(--text-muted);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        
+        .news-title { font-weight: 600; font-size: 12px; line-height: 1.3; margin-bottom: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
+        .news-meta { font-size: 10px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .clickable-item:focus .news-meta { color: rgba(255,255,255,0.85); }
         .clickable-item:focus .cache-tick { color: #fff !important; }
 
@@ -95,13 +75,23 @@
         .article-content p { line-height: 1.5; margin-bottom: 1em; }
         .article-content img { max-width: 100%; height: auto; border-radius: 4px; margin: 8px 0; }
 
+        /* Options overlay — full-screen popup launched by LSK */
+        #options-overlay {
+            display: none;
+            position: absolute; top: 0; left: 0; right: 0; bottom: 28px;
+            background: var(--bg);
+            z-index: 500;
+            flex-direction: column;
+        }
+        #options-overlay.active { display: flex; }
+
         .softkey-bar {
             height: 28px; background: #1a1a1a; color: #ffffff;
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 4px; font-family: "Open Sans", sans-serif;
             font-size: 11px; font-weight: 600; flex-shrink: 0; z-index: 1000;
         }
-        .softkey-btn { background: transparent; border: none; color: white; padding: 0 4px; margin: 0; width: auto; font-size: 11px; }
+        .softkey-btn { background: transparent; border: none; color: white; padding: 0 4px; margin: 0; width: auto; font-size: 11px; cursor: pointer; }
         .softkey-btn:focus { background: transparent; color: #ccc; }
         .softkey-center { font-size: 11px; color: #ccc; font-weight: bold; text-transform: uppercase; }
 
@@ -112,15 +102,10 @@
 <body class="theme-light font-sans size-medium">
 
 <div id="app">
+    <!-- Main views -->
     <div id="view-home" class="view active">
         <div id="sync-status">Updating feeds...</div>
         <div id="home-list"></div>
-    </div>
-
-    <div id="view-options" class="view">
-        <button class="clickable-item" onclick="forceRefresh()" accesskey="1">1. Force Refresh</button>
-        <button class="clickable-item" onclick="switchView('channels', 'Channels')" accesskey="2">2. Browse Channels</button>
-        <button class="clickable-item" onclick="switchView('settings', 'Settings')" accesskey="3">3. Settings</button>
     </div>
 
     <div id="view-channels" class="view">
@@ -154,161 +139,197 @@
             <option value="size-medium">Medium Text</option>
             <option value="size-large">Large Text</option>
         </select>
-        
         <div class="section-label">Toggle Feeds</div>
         <div id="settings-feed-toggles" style="margin-bottom: 10px;"></div>
-        
         <div class="section-label">System</div>
         <button class="clickable-item" onclick="resetApp()" style="color:#ff3b30; font-weight:bold; justify-content:center;">Wipe Cache & Reset</button>
     </div>
 
+    <!-- Options overlay: full-screen popup, launched by LSK (Escape key) -->
+    <div id="options-overlay">
+        <button class="clickable-item" id="opt-refresh"  onclick="closeOptions(); forceRefresh();">1. Force Refresh</button>
+        <button class="clickable-item" id="opt-channels" onclick="closeOptions(); switchView('channels');">2. Browse Channels</button>
+        <button class="clickable-item" id="opt-settings" onclick="closeOptions(); switchView('settings');">3. Settings</button>
+    </div>
+
     <div class="softkey-bar">
-        <button class="softkey-btn" id="lsk-label" tabindex="-1" onclick="handleLSKClick()">Options</button>
+        <!-- LSK visual label only — interaction handled via Escape keydown -->
+        <span class="softkey-btn" id="lsk-label">Options</span>
         <div class="softkey-center" id="csk-label">Select</div>
-        <button class="softkey-btn" id="rsk-label" tabindex="-1" onclick="handleRSKClick()">Exit</button>
+        <!-- RSK visual label only — hardware RSK fires history.back() / 'back' event -->
+        <span class="softkey-btn" id="rsk-label">Exit</span>
     </div>
 </div>
 
 <script>
     const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
-    const CACHE_PREFIX = 'rss_article_';
-    
+    const CACHE_PREFIX  = 'rss_article_';
+
     const proxyList = [
         "https://api.allorigins.win/raw?url=",
         "https://api.codetabs.com/v1/proxy?quest=",
         "https://corsproxy.io/?"
     ];
-    
+
     const defaultFeeds = [
-        { id: "bbc", name: "BBC News", url: "https://feeds.bbci.co.uk/news/rss.xml", enabled: true },
-        { id: "nyt", name: "New York Times", url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", enabled: true },
-        { id: "palo", name: "Prothom Alo", url: "https://www.prothomalo.com/feed/", enabled: true },
-        { id: "star", name: "The Daily Star", url: "https://www.thedailystar.net/frontpage/rss.xml", enabled: true }
+        { id: "bbc",  name: "BBC News",        url: "https://feeds.bbci.co.uk/news/rss.xml",                              enabled: true },
+        { id: "nyt",  name: "New York Times",   url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",          enabled: true },
+        { id: "palo", name: "Prothom Alo",      url: "https://www.prothomalo.com/feed/",                                   enabled: true },
+        { id: "star", name: "The Daily Star",   url: "https://www.thedailystar.net/frontpage/rss.xml",                    enabled: true }
     ];
 
     let state = {
-        feeds: [], currentView: "home", activeArticleUrl: "", currentChannelName: "",
+        feeds: [], currentView: "home", activeArticleUrl: "",
+        optionsOpen: false,
         settings: { theme: "theme-light", font: "font-sans", size: "size-medium" }
     };
 
     let prefetchQueue = [];
-    let isPrefetching = false;
+    let isPrefetching  = false;
 
     window.addEventListener('DOMContentLoaded', () => {
         cleanupCache();
         loadSavedData();
-        setupPhysicalKeyBindings();
-        loadMixedFeed(); 
+        setupKeyBindings();
+        loadMixedFeed();
     });
 
-    // --- CACHE ---
+    // ── CACHE ────────────────────────────────────────────────────────────────
     function safeSetItem(key, value) {
         try { localStorage.setItem(key, value); }
         catch (e) {
             if (e.name === 'QuotaExceededError') {
-                cleanupCache(true); 
-                try { localStorage.setItem(key, value); } catch (err) {}
+                cleanupCache(true);
+                try { localStorage.setItem(key, value); } catch (_) {}
             }
         }
     }
 
     function cleanupCache(aggressive = false) {
         const now = Date.now();
-        const keysToRemove = [];
+        const remove = [];
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             if (key && key.startsWith(CACHE_PREFIX)) {
                 try {
-                    const item = JSON.parse(localStorage.getItem(key));
-                    const limit = aggressive ? (24 * 60 * 60 * 1000) : THREE_DAYS_MS;
-                    if (now - item.timestamp > limit) keysToRemove.push(key);
-                } catch(e) { keysToRemove.push(key); }
+                    const item  = JSON.parse(localStorage.getItem(key));
+                    const limit = aggressive ? 86400000 : THREE_DAYS_MS;
+                    if (now - item.timestamp > limit) remove.push(key);
+                } catch(_) { remove.push(key); }
             }
         }
-        keysToRemove.forEach(k => localStorage.removeItem(k));
+        remove.forEach(k => localStorage.removeItem(k));
     }
 
     function loadSavedData() {
-        const savedFeeds = localStorage.getItem('rss_feeds_cfg');
-        const savedSettings = localStorage.getItem('rss_settings');
-        state.feeds = savedFeeds ? JSON.parse(savedFeeds) : JSON.parse(JSON.stringify(defaultFeeds));
-        if(savedSettings) {
-            const parsed = JSON.parse(savedSettings);
-            state.settings = { ...state.settings, ...parsed };
-        }
+        const sf = localStorage.getItem('rss_feeds_cfg');
+        const ss = localStorage.getItem('rss_settings');
+        state.feeds = sf ? JSON.parse(sf) : JSON.parse(JSON.stringify(defaultFeeds));
+        if (ss) state.settings = { ...state.settings, ...JSON.parse(ss) };
         applySettingsToDOM();
     }
 
-    // --- NETWORK ---
+    // ── NETWORK ──────────────────────────────────────────────────────────────
     async function fetchWithFallback(targetUrl) {
-        let lastError;
-        for (let i = 0; i < proxyList.length; i++) {
+        for (const proxy of proxyList) {
             try {
-                const res = await fetch(proxyList[i] + encodeURIComponent(targetUrl));
+                const res = await fetch(proxy + encodeURIComponent(targetUrl));
                 if (res.ok) return await res.text();
-            } catch (err) { lastError = err; }
+            } catch (_) {}
         }
         throw new Error("Network block.");
     }
 
-    // --- VIEWS & NAVIGATION ---
-    function switchView(viewName, titleOverride = null) {
-        state.currentView = viewName;
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById(`view-${viewName}`).classList.add('active');
-        
-        if(viewName === 'settings') { renderSettingsFeedToggles(); }
-        else if(viewName === 'channels') { renderChannelsList(); }
-
+    // ── OPTIONS OVERLAY (LSK) ────────────────────────────────────────────────
+    // Per Cloud Phone docs: LSK = Escape key; opens a full-screen options popup.
+    function openOptions() {
+        state.optionsOpen = true;
+        document.getElementById('options-overlay').classList.add('active');
+        document.getElementById('lsk-label').innerText = 'Select';
+        document.getElementById('rsk-label').innerText = 'Close';
+        // Focus first item
         setTimeout(() => {
-            const activeView = document.getElementById(`view-${viewName}`);
-            const focusTarget = activeView.querySelector('.clickable-item, input, select');
-            if(focusTarget) {
-                focusTarget.focus();
-                focusTarget.scrollIntoView({ block: 'nearest' });
-            }
+            const first = document.querySelector('#options-overlay .clickable-item');
+            if (first) first.focus();
         }, 10);
-        
-        updateSoftkeyLabels();
     }
 
-    // --- CHANNEL BROWSING ---
+    function closeOptions() {
+        state.optionsOpen = false;
+        document.getElementById('options-overlay').classList.remove('active');
+        updateSoftkeyLabels();
+        // Restore focus to current view
+        setTimeout(() => {
+            const activeView = document.getElementById('view-' + state.currentView);
+            const first = activeView && activeView.querySelector('.clickable-item, input, select');
+            if (first) first.focus();
+        }, 10);
+    }
+
+    // ── VIEWS ────────────────────────────────────────────────────────────────
+    function switchView(viewName) {
+        if (state.optionsOpen) closeOptions();
+        state.currentView = viewName;
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById('view-' + viewName).classList.add('active');
+
+        if (viewName === 'settings')  renderSettingsFeedToggles();
+        if (viewName === 'channels')  renderChannelsList();
+
+        updateSoftkeyLabels();
+
+        setTimeout(() => {
+            const activeView = document.getElementById('view-' + viewName);
+            const first = activeView && activeView.querySelector('.clickable-item, input, select');
+            if (first) { first.focus(); first.scrollIntoView({ block: 'nearest' }); }
+        }, 10);
+    }
+
+    function updateSoftkeyLabels() {
+        if (state.optionsOpen) return; // labels already set in openOptions()
+        const map = {
+            home:      ['Options', 'OPEN',     'Exit'],
+            channels:  ['Options', 'OPEN',     'Back'],
+            headlines: ['Options', 'OPEN',     'Back'],
+            reader:    ['Back',    'EXTERNAL', ''],
+            settings:  ['Save',    'EDIT',     'Back']
+        };
+        const labels = map[state.currentView] || ['Options', 'SELECT', 'Back'];
+        document.getElementById('lsk-label').innerText = labels[0];
+        document.getElementById('csk-label').innerText = labels[1];
+        document.getElementById('rsk-label').innerText = labels[2];
+    }
+
+    // ── CHANNELS ─────────────────────────────────────────────────────────────
     function renderChannelsList() {
         const container = document.getElementById('channels-list');
-        container.innerHTML = "";
-        
-        if (state.feeds.length === 0) {
+        container.innerHTML = '';
+        if (!state.feeds.length) {
             container.innerHTML = "<div class='empty-state'>No channels configured.</div>";
             return;
         }
-
         state.feeds.forEach(feed => {
             const btn = document.createElement('button');
-            btn.className = "clickable-item";
-            btn.innerHTML = `
-                <div style="flex:1; font-weight:600;">${feed.name}</div>
-                <div style="font-size:10px; color:var(--text-muted);">${feed.enabled !== false ? 'ON' : 'OFF'}</div>
-            `;
+            btn.className = 'clickable-item';
+            btn.innerHTML = `<div style="flex:1;font-weight:600;">${feed.name}</div><div style="font-size:10px;color:var(--text-muted);">${feed.enabled !== false ? 'ON' : 'OFF'}</div>`;
             btn.onclick = () => openChannelHeadlines(feed);
             container.appendChild(btn);
         });
     }
 
     function openChannelHeadlines(feed) {
-        state.currentChannelName = feed.name;
         const container = document.getElementById('headlines-list');
-        const cachedFeeds = JSON.parse(localStorage.getItem('rss_feed_cache') || '[]');
-        const channelArticles = cachedFeeds.filter(a => a.source === feed.name);
-        
-        if (channelArticles.length > 0) {
-            renderArticles(channelArticles, container, true);
+        const cached    = JSON.parse(localStorage.getItem('rss_feed_cache') || '[]');
+        const articles  = cached.filter(a => a.source === feed.name);
+        if (articles.length) {
+            renderArticles(articles, container, true);
         } else {
-            container.innerHTML = "<div class='empty-state'>No cached articles for this channel. Force Refresh from options.</div>";
+            container.innerHTML = "<div class='empty-state'>No cached articles. Force Refresh from options.</div>";
         }
-        switchView('headlines', feed.name);
+        switchView('headlines');
     }
 
-    // --- FEED LOADING ---
+    // ── FEED LOADING ─────────────────────────────────────────────────────────
     function forceRefresh() {
         localStorage.removeItem('rss_feed_cache');
         loadMixedFeed();
@@ -316,400 +337,340 @@
 
     async function loadMixedFeed() {
         switchView('home');
-        const container = document.getElementById('home-list');
+        const container  = document.getElementById('home-list');
         const syncStatus = document.getElementById('sync-status');
-        
+
         let cachedFeeds = JSON.parse(localStorage.getItem('rss_feed_cache') || '[]');
-        const now = Date.now();
-        cachedFeeds = cachedFeeds.filter(a => (now - a.timestamp) < THREE_DAYS_MS);
-        
-        if (cachedFeeds.length > 0) {
+        cachedFeeds = cachedFeeds.filter(a => Date.now() - a.timestamp < THREE_DAYS_MS);
+
+        if (cachedFeeds.length) {
             renderArticles(cachedFeeds, container, false);
-            syncStatus.style.display = 'block'; 
+            syncStatus.style.display = 'block';
         } else {
             container.innerHTML = "<div class='empty-state'>Syncing latest news...</div>";
         }
 
-        const enabledFeeds = state.feeds.filter(f => f.enabled !== false);
-        if(enabledFeeds.length === 0) {
+        const enabled = state.feeds.filter(f => f.enabled !== false);
+        if (!enabled.length) {
             container.innerHTML = "<div class='empty-state'>All feeds disabled. Go to Settings.</div>";
-            syncStatus.style.display = 'none'; return;
+            syncStatus.style.display = 'none';
+            return;
         }
 
         let newArticles = [];
-        await Promise.allSettled(enabledFeeds.map(async feed => {
+        await Promise.allSettled(enabled.map(async feed => {
             try {
-                const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`);
+                const res  = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`);
                 const data = await res.json();
                 if (data.status === 'ok') {
                     data.items.forEach(item => {
                         newArticles.push({
                             title: item.title, link: item.link, source: feed.name,
-                            desc: (item.description || "").replace(/<\/?[^>]+(>|$)/g, "").trim(),
+                            desc: (item.description || '').replace(/<\/?[^>]+(>|$)/g, '').trim(),
                             timestamp: new Date(item.pubDate).getTime(),
                             thumbnail: item.thumbnail || (item.enclosure && item.enclosure.link) || null
                         });
                     });
                     return;
                 }
-            } catch(e) {}
-
+            } catch(_) {}
             try {
                 const text = await fetchWithFallback(feed.url);
-                const doc = new DOMParser().parseFromString(text, "text/xml");
-                doc.querySelectorAll("item, entry").forEach(item => {
-                    const title = item.querySelector("title")?.textContent || "Untitled";
-                    const linkNode = item.querySelector("link");
-                    const link = linkNode ? (linkNode.textContent || linkNode.getAttribute("href")) : "";
-                    const dateText = item.querySelector("pubDate, updated, published")?.textContent;
-                    let thumb = item.querySelector("thumbnail, content, image")?.getAttribute("url") || null;
-                    
+                const doc  = new DOMParser().parseFromString(text, 'text/xml');
+                doc.querySelectorAll('item, entry').forEach(item => {
+                    const title    = item.querySelector('title')?.textContent || 'Untitled';
+                    const linkNode = item.querySelector('link');
+                    const link     = linkNode ? (linkNode.textContent || linkNode.getAttribute('href')) : '';
+                    const dateText = item.querySelector('pubDate, updated, published')?.textContent;
+                    const thumb    = item.querySelector('thumbnail, content, image')?.getAttribute('url') || null;
                     newArticles.push({
                         title, link, source: feed.name, thumbnail: thumb,
-                        desc: (item.querySelector("description, summary")?.textContent || "").replace(/<\/?[^>]+(>|$)/g, "").trim(),
+                        desc: (item.querySelector('description, summary')?.textContent || '').replace(/<\/?[^>]+(>|$)/g, '').trim(),
                         timestamp: dateText ? new Date(dateText).getTime() : Date.now()
                     });
                 });
-            } catch(e) {}
+            } catch(_) {}
         }));
-        
+
         syncStatus.style.display = 'none';
 
-        if (newArticles.length > 0) {
+        if (newArticles.length) {
             const merged = [...newArticles, ...cachedFeeds];
-            const unique = Array.from(new Map(merged.map(item => [item.link, item])).values());
+            const unique = Array.from(new Map(merged.map(i => [i.link, i])).values());
             unique.sort((a, b) => b.timestamp - a.timestamp);
-            
-            const finalFeeds = unique.slice(0, 60);
-            safeSetItem('rss_feed_cache', JSON.stringify(finalFeeds));
-            
-            if (state.currentView === 'home') renderArticles(finalFeeds, container, false);
-            
-            startPrefetching(finalFeeds.slice(0, 15));
-        } else if (cachedFeeds.length === 0) {
-             container.innerHTML = "<div class='empty-state' style='color:#e33;'>Offline or Feeds blocked.</div>";
+            const final = unique.slice(0, 60);
+            safeSetItem('rss_feed_cache', JSON.stringify(final));
+            if (state.currentView === 'home') renderArticles(final, container, false);
+            startPrefetching(final.slice(0, 15));
+        } else if (!cachedFeeds.length) {
+            container.innerHTML = "<div class='empty-state' style='color:#e33;'>Offline or Feeds blocked.</div>";
         }
     }
 
-    // --- ARTICLE CARDS ---
+    // ── ARTICLE CARDS ─────────────────────────────────────────────────────────
     function renderArticles(articles, container, hideSource = false) {
-        container.innerHTML = "";
+        container.innerHTML = '';
         articles.forEach(article => {
-            const timeStr = formatTimeAgo(article.timestamp);
+            const timeStr  = formatTimeAgo(article.timestamp);
             const metaText = hideSource ? timeStr : (timeStr ? `${article.source} • ${timeStr}` : article.source);
-            
-            const thumbHtml = article.thumbnail 
-                ? `<img src="${article.thumbnail}" class="news-thumbnail" loading="lazy">` 
+            const thumbHtml = article.thumbnail
+                ? `<img src="${article.thumbnail}" class="news-thumbnail" loading="lazy">`
                 : `<div class="news-thumbnail" style="display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(128,128,128,0.5);">TXT</div>`;
-            
             const isLoaded = !!localStorage.getItem(CACHE_PREFIX + article.link);
-            const tickHtml = `<span class="cache-tick" data-url="${encodeURIComponent(article.link)}" style="color:currentColor; opacity: 0.6; font-weight:bold; margin-left:4px; display:${isLoaded ? 'inline' : 'none'};">✓</span>`;
-            
+            const tickHtml = `<span class="cache-tick" data-url="${encodeURIComponent(article.link)}" style="opacity:0.6;font-weight:bold;margin-left:4px;display:${isLoaded ? 'inline' : 'none'};">✓</span>`;
             const card = document.createElement('button');
-            card.className = "clickable-item";
-            
-            card.innerHTML = `
-                <div class="news-card-content">
-                    <div class="news-card-text">
-                        <div class="news-title">${article.title}</div>
-                        <div class="news-meta">${metaText}${tickHtml}</div>
-                    </div>
-                    ${thumbHtml}
-                </div>
-            `;
+            card.className = 'clickable-item';
+            card.innerHTML = `<div class="news-card-content"><div class="news-card-text"><div class="news-title">${article.title}</div><div class="news-meta">${metaText}${tickHtml}</div></div>${thumbHtml}</div>`;
             card.onclick = () => loadFullArticle(article.link, article.title, metaText, article.desc);
             container.appendChild(card);
         });
     }
 
-    // --- PREFETCH & EXTRACTION ---
+    // ── PREFETCH ──────────────────────────────────────────────────────────────
     function startPrefetching(articles) {
-        const urlsToFetch = articles
-            .filter(a => a.link && !localStorage.getItem(CACHE_PREFIX + a.link))
-            .map(a => a.link);
-        prefetchQueue = [...new Set([...prefetchQueue, ...urlsToFetch])];
+        const urls = articles.filter(a => a.link && !localStorage.getItem(CACHE_PREFIX + a.link)).map(a => a.link);
+        prefetchQueue = [...new Set([...prefetchQueue, ...urls])];
         if (!isPrefetching) processPrefetchQueue();
     }
 
     async function processPrefetchQueue() {
-        if (prefetchQueue.length === 0) { isPrefetching = false; return; }
+        if (!prefetchQueue.length) { isPrefetching = false; return; }
         isPrefetching = true;
         const url = prefetchQueue.shift();
-        
-        if(!localStorage.getItem(CACHE_PREFIX + url)) {
+        if (!localStorage.getItem(CACHE_PREFIX + url)) {
             try {
                 let html = await extractArticleHtml(url);
                 let isFb = false;
                 if (!html || html.length < 200) {
-                    const cachedFeeds = JSON.parse(localStorage.getItem('rss_feed_cache') || '[]');
-                    const match = cachedFeeds.find(a => a.link === url);
-                    html = `<p><em>Extraction limited. Summary:</em></p><blockquote style="border-left:2px solid var(--border); padding-left:8px; color:var(--text-muted);">${match ? match.desc : "No details."}</blockquote>`;
+                    const cached = JSON.parse(localStorage.getItem('rss_feed_cache') || '[]');
+                    const match  = cached.find(a => a.link === url);
+                    html = `<p><em>Extraction limited. Summary:</em></p><blockquote style="border-left:2px solid var(--border);padding-left:8px;color:var(--text-muted);">${match ? match.desc : 'No details.'}</blockquote>`;
                     isFb = true;
                 }
                 safeSetItem(CACHE_PREFIX + url, JSON.stringify({ content: html, timestamp: Date.now(), isFallback: isFb }));
-                
-                const ticks = document.querySelectorAll(`.cache-tick[data-url="${encodeURIComponent(url)}"]`);
-                ticks.forEach(t => t.style.display = 'inline');
-            } catch (e) {} 
+                document.querySelectorAll(`.cache-tick[data-url="${encodeURIComponent(url)}"]`).forEach(t => t.style.display = 'inline');
+            } catch(_) {}
         }
-        setTimeout(processPrefetchQueue, 1500); 
+        setTimeout(processPrefetchQueue, 1500);
     }
 
     async function extractArticleHtml(url) {
         try {
             const htmlText = await fetchWithFallback(url);
-            const doc = new DOMParser().parseFromString(htmlText, "text/html");
-            const targetArea = doc.querySelector('article, main, .article-body, .story-body, [itemprop="articleBody"]');
-            
-            let parsedHtml = "";
-            const root = targetArea || doc.body;
-
+            const doc      = new DOMParser().parseFromString(htmlText, 'text/html');
+            const root     = doc.querySelector('article, main, .article-body, .story-body, [itemprop="articleBody"]') || doc.body;
+            let parsed     = '';
             root.querySelectorAll('p, h2, h3, img').forEach(n => {
                 if (n.tagName === 'IMG') {
                     let src = n.getAttribute('src') || n.getAttribute('data-src');
                     if (src && !src.startsWith('data:') && !src.includes('.svg')) {
-                        if (src.startsWith('/')) { try { src = new URL(src, url).href; } catch(e){} }
-                        parsedHtml += `<img src="${src}" loading="lazy" />`;
+                        if (src.startsWith('/')) { try { src = new URL(src, url).href; } catch(_){} }
+                        parsed += `<img src="${src}" loading="lazy" />`;
                     }
                 } else if (n.textContent.trim().length > 25) {
-                    parsedHtml += `<${n.tagName.toLowerCase()}>${n.innerHTML}</${n.tagName.toLowerCase()}>`;
+                    parsed += `<${n.tagName.toLowerCase()}>${n.innerHTML}</${n.tagName.toLowerCase()}>`;
                 }
             });
-            parsedHtml = parsedHtml.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
-            parsedHtml = parsedHtml.replace(/style="[^"]*"/gi, "").replace(/class="[^"]*"/gi, "");
-            return parsedHtml;
-        } catch(e) { return ""; }
+            parsed = parsed.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+            parsed = parsed.replace(/style="[^"]*"/gi, '').replace(/class="[^"]*"/gi, '');
+            return parsed;
+        } catch(_) { return ''; }
     }
 
-    async function loadFullArticle(url, title, meta, fallbackDesc = "") {
+    async function loadFullArticle(url, title, meta, fallbackDesc = '') {
         state.activeArticleUrl = url;
         switchView('reader');
-        
         document.getElementById('reader-title').innerText = title;
-        document.getElementById('reader-meta').innerText = meta || 'Article View';
+        document.getElementById('reader-meta').innerText  = meta || 'Article View';
         const content = document.getElementById('reader-content');
-
-        const cached = localStorage.getItem(CACHE_PREFIX + url);
-        if (cached) {
-            const data = JSON.parse(cached);
-            content.innerHTML = data.content;
-            return;
-        }
-
+        const cached  = localStorage.getItem(CACHE_PREFIX + url);
+        if (cached) { content.innerHTML = JSON.parse(cached).content; return; }
         content.innerHTML = "<div class='empty-state'>Downloading text & images...</div>";
         try {
             let html = await extractArticleHtml(url);
             let isFb = false;
             if (!html || html.length < 200) {
-                html = `<p><em>Extraction limited. Summary:</em></p><blockquote style="border-left:2px solid var(--border); padding-left:8px; color:var(--text-muted);">${fallbackDesc || "No details."}</blockquote>`;
+                html = `<p><em>Extraction limited. Summary:</em></p><blockquote style="border-left:2px solid var(--border);padding-left:8px;color:var(--text-muted);">${fallbackDesc || 'No details.'}</blockquote>`;
                 isFb = true;
             }
             content.innerHTML = html;
-            
             safeSetItem(CACHE_PREFIX + url, JSON.stringify({ content: html, timestamp: Date.now(), isFallback: isFb }));
             document.querySelectorAll(`.cache-tick[data-url="${encodeURIComponent(url)}"]`).forEach(t => t.style.display = 'inline');
-        } catch (err) {
-            content.innerHTML = `<p><em>Offline. Summary:</em></p><blockquote style="border-left:2px solid var(--border); padding-left:8px; color:var(--text-muted);">${fallbackDesc || "No details."}</blockquote>`;
+        } catch(_) {
+            content.innerHTML = `<p><em>Offline. Summary:</em></p><blockquote style="border-left:2px solid var(--border);padding-left:8px;color:var(--text-muted);">${fallbackDesc || 'No details.'}</blockquote>`;
         }
     }
 
-    // --- SETTINGS & HELPERS ---
-    function formatTimeAgo(timestamp) {
-        if(!timestamp) return "";
-        const seconds = Math.floor((Date.now() - timestamp) / 1000);
-        let interval = seconds / 3600;
-        if (interval >= 1 && interval < 24) return Math.floor(interval) + "h ago";
-        interval = seconds / 60;
-        if (interval >= 1 && interval < 60) return Math.floor(interval) + "m ago";
-        if (seconds < 60) return "Just now";
-        return new Date(timestamp).toLocaleDateString(undefined, {month:'short', day:'numeric'});
-    }
-
+    // ── SETTINGS ──────────────────────────────────────────────────────────────
     function applySettings() {
         state.settings.theme = document.getElementById('setting-theme').value;
-        state.settings.size = document.getElementById('setting-size').value;
-        state.settings.font = document.getElementById('setting-font').value;
+        state.settings.size  = document.getElementById('setting-size').value;
+        state.settings.font  = document.getElementById('setting-font').value;
         localStorage.setItem('rss_settings', JSON.stringify(state.settings));
         applySettingsToDOM();
     }
 
     function applySettingsToDOM() {
         document.getElementById('setting-theme').value = state.settings.theme;
-        document.getElementById('setting-size').value = state.settings.size;
-        document.getElementById('setting-font').value = state.settings.font;
+        document.getElementById('setting-size').value  = state.settings.size;
+        document.getElementById('setting-font').value  = state.settings.font;
         document.body.className = `${state.settings.theme} ${state.settings.font} ${state.settings.size}`;
     }
 
     function renderSettingsFeedToggles() {
         const container = document.getElementById('settings-feed-toggles');
-        container.innerHTML = "";
+        container.innerHTML = '';
         state.feeds.forEach((feed, i) => {
             const btn = document.createElement('button');
-            btn.className = "clickable-item";
-            btn.innerHTML = `<div style="flex:1;">${feed.name}</div><div style="font-size:10px; font-weight:bold;">${feed.enabled !== false ? '[ON]' : '[OFF]'}</div>`;
+            btn.className = 'clickable-item';
+            btn.innerHTML = `<div style="flex:1;">${feed.name}</div><div style="font-size:10px;font-weight:bold;">${feed.enabled !== false ? '[ON]' : '[OFF]'}</div>`;
             btn.onclick = () => {
                 state.feeds[i].enabled = !(feed.enabled !== false);
                 localStorage.setItem('rss_feeds_cfg', JSON.stringify(state.feeds));
-                renderSettingsFeedToggles(); forceRefresh();
+                renderSettingsFeedToggles();
+                forceRefresh();
             };
             container.appendChild(btn);
         });
     }
 
     function resetApp() {
-        if(confirm("Factory reset? All saved feeds and cache will be deleted.")) {
+        if (confirm('Factory reset? All saved feeds and cache will be deleted.')) {
             localStorage.clear();
             window.location.reload();
         }
     }
 
-    // --- HARDWARE DPAD & NUMPAD NAVIGATION ---
-    
+    function formatTimeAgo(timestamp) {
+        if (!timestamp) return '';
+        const s = Math.floor((Date.now() - timestamp) / 1000);
+        let i = s / 3600;
+        if (i >= 1 && i < 24) return Math.floor(i) + 'h ago';
+        i = s / 60;
+        if (i >= 1 && i < 60) return Math.floor(i) + 'm ago';
+        if (s < 60) return 'Just now';
+        return new Date(timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    }
+
+    // ── D-PAD FOCUS MOVEMENT ──────────────────────────────────────────────────
     function moveFocus(direction) {
-        const activeView = document.querySelector('.view.active');
-        if (!activeView) return;
-
-        const focusables = Array.from(activeView.querySelectorAll('.clickable-item, input, select'))
-                                .filter(el => el.offsetParent !== null);
-        
-        if (focusables.length === 0) return;
-
-        let currentIndex = focusables.indexOf(document.activeElement);
-        
-        if (direction === 1) { 
-            currentIndex = currentIndex + 1 < focusables.length ? currentIndex + 1 : focusables.length - 1;
-        } else if (direction === -1) { 
-            currentIndex = currentIndex - 1 >= 0 ? currentIndex - 1 : 0;
-        } else {
-            currentIndex = 0;
-        }
-        
-        focusables[currentIndex].focus();
-        focusables[currentIndex].scrollIntoView({ block: 'nearest' });
+        // If options overlay is open, navigate within it
+        const root = state.optionsOpen
+            ? document.getElementById('options-overlay')
+            : document.querySelector('.view.active');
+        if (!root) return;
+        const focusables = Array.from(root.querySelectorAll('.clickable-item, input, select'))
+                               .filter(el => el.offsetParent !== null);
+        if (!focusables.length) return;
+        let idx = focusables.indexOf(document.activeElement);
+        if (direction === 1)  idx = Math.min(idx + 1, focusables.length - 1);
+        if (direction === -1) idx = Math.max(idx - 1, 0);
+        if (idx < 0) idx = 0;
+        focusables[idx].focus();
+        focusables[idx].scrollIntoView({ block: 'nearest' });
     }
 
-    function updateSoftkeyLabels() {
-        const lsk = document.getElementById('lsk-label');
-        const csk = document.getElementById('csk-label');
-        const rsk = document.getElementById('rsk-label');
-        const map = {
-            "home":      ["Options",  "OPEN",     "Exit"],
-            "options":   ["Select",   "OK",       "Back"],
-            "channels":  ["Select",   "OPEN",     "Back"],
-            "headlines": ["Select",   "OPEN",     "Back"],
-            "reader":    ["Back",     "EXTERNAL", ""],
-            "settings":  ["Save",     "EDIT",     "Back"]
-        };
-        lsk.innerText = map[state.currentView][0]; 
-        csk.innerText = map[state.currentView][1];
-        rsk.innerText = map[state.currentView][2];
-    }
+    // ── KEY BINDINGS ──────────────────────────────────────────────────────────
+    // Per Cloud Phone docs:
+    //   LSK  → Escape key (programmable)
+    //   RSK  → history.back() / 'back' event (programmable)
+    //   Enter/Center → click / confirm
+    //   ArrowUp/Down → list navigation
+    function setupKeyBindings() {
 
-    // --- FIX: LSK handler with proper early returns and softkey self-click guard ---
-    function handleLSKClick() {
-        if (state.currentView === "home") {
-            switchView('options');
-            return; // Early return — do not fall through
-        }
+        window.addEventListener('keydown', e => {
 
-        if (["options", "channels", "headlines"].includes(state.currentView)) {
-            const act = document.activeElement;
-            const lskBtn = document.getElementById('lsk-label');
-            const rskBtn = document.getElementById('rsk-label');
-            // Guard: don't re-click the softkey buttons themselves
-            if (act && act !== lskBtn && act !== rskBtn &&
-                (act.tagName === 'BUTTON' || act.classList.contains('clickable-item'))) {
-                act.click();
-            }
-            return;
-        }
+            // ── LSK = Escape ──────────────────────────────────────────────────
+            if (e.key === 'Escape') {
+                e.preventDefault();
 
-        if (state.currentView === "reader") {
-            switchView('home');
-            return;
-        }
-
-        if (state.currentView === "settings") {
-            applySettings();
-            switchView('home');
-            return;
-        }
-    }
-
-    function handleRSKClick() {
-        if (state.currentView === "home") {
-            window.close();
-            return;
-        }
-        if (["options", "channels", "settings"].includes(state.currentView)) {
-            switchView('home');
-            return;
-        }
-        if (state.currentView === "headlines") {
-            switchView('channels');
-            return;
-        }
-        // RSK does nothing in reader
-    }
-
-    function setupPhysicalKeyBindings() {
-        window.addEventListener('keydown', (e) => {
-            // Softkeys
-            if (['SoftLeft', 'F1'].includes(e.key) || e.keyCode === 118) { e.preventDefault(); handleLSKClick(); return; }
-            if (['SoftRight', 'F2'].includes(e.key) || e.keyCode === 119) { e.preventDefault(); handleRSKClick(); return; }
-            
-            // Back / EndCall / Escape
-            if (['Backspace', 'BrowserBack', 'Escape'].includes(e.key) || e.keyCode === 8) {
-                if (state.currentView !== 'home') {
-                    e.preventDefault();
-                    if (state.currentView === 'reader') handleLSKClick();
-                    else handleRSKClick(); 
+                if (state.optionsOpen) {
+                    // Escape closes the options menu
+                    closeOptions();
                     return;
                 }
-            }
 
-            // Arrow Keys + Numpad 2/8 for scroll
-            const isDown = e.key === 'ArrowDown' || e.key === '8';
-            const isUp   = e.key === 'ArrowUp'   || e.key === '2';
-
-            if (isUp || isDown) {
+                // In reader, LSK/Escape acts as Back
                 if (state.currentView === 'reader') {
-                    const readerView = document.getElementById('view-reader');
-                    readerView.scrollTop += (isDown ? 80 : -80);
-                    e.preventDefault(); 
-                } else {
-                    e.preventDefault(); 
-                    moveFocus(isDown ? 1 : -1);
+                    switchView('home');
+                    return;
                 }
+
+                // In settings, Escape saves and goes home
+                if (state.currentView === 'settings') {
+                    applySettings();
+                    switchView('home');
+                    return;
+                }
+
+                // On any other view, Escape opens the options overlay
+                openOptions();
                 return;
             }
 
-            // Enter / Numpad 5
-            if (e.key === 'Enter' || e.key === '5') {
+            // ── Enter / center D-pad ──────────────────────────────────────────
+            if (e.key === 'Enter') {
                 if (state.currentView === 'reader') {
                     e.preventDefault();
                     window.open(state.activeArticleUrl, '_blank');
-                } else if (document.activeElement && document.activeElement.click) {
+                    return;
+                }
+                if (document.activeElement && typeof document.activeElement.click === 'function') {
                     e.preventDefault();
                     document.activeElement.click();
                 }
                 return;
             }
 
-            // Numeric shortcuts on home/options
-            if (state.currentView === 'home' || state.currentView === 'options') {
+            // ── ArrowUp / ArrowDown (also numpad 2 / 8) ───────────────────────
+            const isDown = e.key === 'ArrowDown' || e.key === '8';
+            const isUp   = e.key === 'ArrowUp'   || e.key === '2';
+
+            if (isDown || isUp) {
+                if (!state.optionsOpen && state.currentView === 'reader') {
+                    document.getElementById('view-reader').scrollTop += isDown ? 80 : -80;
+                } else {
+                    moveFocus(isDown ? 1 : -1);
+                }
+                e.preventDefault();
+                return;
+            }
+
+            // ── Numeric shortcuts (home view only, options not open) ──────────
+            if (!state.optionsOpen && state.currentView === 'home') {
                 if (e.key === '1') { e.preventDefault(); forceRefresh(); }
                 if (e.key === '2') { e.preventDefault(); switchView('channels'); }
                 if (e.key === '3') { e.preventDefault(); switchView('settings'); }
             }
         });
-        
-        // Native back button (KaiOS / feature phone)
-        window.addEventListener("back", function(e) {
-            if (state.currentView !== 'home') {
-                e.preventDefault(); 
-                if (state.currentView === 'reader') handleLSKClick();
-                else handleRSKClick();
+
+        // ── RSK = history.back() / 'back' event ──────────────────────────────
+        // The 'back' event fires when the hardware RSK is pressed.
+        // We intercept it to handle in-app navigation ourselves.
+        window.addEventListener('back', e => {
+            e.preventDefault();
+
+            if (state.optionsOpen) {
+                closeOptions();
+                return;
+            }
+
+            switch (state.currentView) {
+                case 'home':
+                    window.close(); // Allow OS to exit
+                    break;
+                case 'reader':
+                    switchView('home');
+                    break;
+                case 'headlines':
+                    switchView('channels');
+                    break;
+                case 'settings':
+                case 'channels':
+                    switchView('home');
+                    break;
+                default:
+                    switchView('home');
             }
         });
     }
