@@ -17,18 +17,10 @@
             --border: #e5e5ea;
         }
 
-        /* Theme Mapping */
-        body.theme-light {
-            --bg: #fafafa; --surface: #ffffff; --text: #1a1a1a; --text-muted: #6e6e73; --border: #e5e5ea;
-        }
-        body.theme-dark {
-            --bg: #000000; --surface: #1c1c1e; --text: #f5f5f7; --text-muted: #98989d; --border: #38383a; --focus-bg: #2c2c2e; --focus-outline: #0a84ff;
-        }
-        body.theme-sepia {
-            --bg: #f4ecd8; --surface: #fdf6e3; --text: #433422; --text-muted: #8f7762; --border: #e4d9c4; --focus-bg: #eae0c4;
-        }
+        body.theme-light { --bg: #fafafa; --surface: #ffffff; --text: #1a1a1a; --text-muted: #6e6e73; --border: #e5e5ea; }
+        body.theme-dark { --bg: #000000; --surface: #1c1c1e; --text: #f5f5f7; --text-muted: #98989d; --border: #38383a; --focus-bg: #2c2c2e; --focus-outline: #0a84ff; }
+        body.theme-sepia { --bg: #f4ecd8; --surface: #fdf6e3; --text: #433422; --text-muted: #8f7762; --border: #e4d9c4; --focus-bg: #eae0c4; }
 
-        /* Typography Mapping */
         body.font-sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body.font-serif { font-family: "Iowan Old Style", "Apple Garamond", Baskerville, "Times New Roman", serif; }
 
@@ -36,184 +28,121 @@
         body.size-medium { font-size: 16px; }
         body.size-large { font-size: 19px; }
 
-        /* Global Reset & Layout */
         body {
-            margin: 0;
-            padding: 0 0 40px 0;
-            background: var(--bg);
-            color: var(--text);
-            box-sizing: border-box;
-            line-height: 1.4;
+            margin: 0; padding: 0 0 40px 0;
+            background: var(--bg); color: var(--text);
+            box-sizing: border-box; line-height: 1.4;
         }
 
         .view { display: none; padding: 12px; }
         .view.active { display: block; }
 
-        h1, h2, h3 {
-            font-size: 1.2rem;
-            margin: 0 0 12px 0;
-            text-align: center;
-            font-weight: 600;
-        }
+        h1, h2, h3 { font-size: 1.2rem; margin: 0 0 12px 0; text-align: center; font-weight: 600; }
         
         .section-label {
-            font-size: 0.85em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            margin: 20px 0 8px 0;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 4px;
+            font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--text-muted); margin: 20px 0 8px 0;
+            border-bottom: 1px solid var(--border); padding-bottom: 4px;
         }
 
-        /* Interactive Elements & D-Pad Navigation */
         input, select, button, .clickable-item {
-            font-size: inherit;
-            font-family: inherit;
-            color: inherit;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 10px;
-            border-radius: 6px;
-            box-sizing: border-box;
-            width: 100%;
-            margin-bottom: 8px;
-            text-align: left;
-            display: block;
-            text-decoration: none;
-            cursor: pointer;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            font-size: inherit; font-family: inherit; color: inherit;
+            background: var(--surface); border: 1px solid var(--border);
+            padding: 10px; border-radius: 6px; box-sizing: border-box;
+            width: 100%; margin-bottom: 8px; text-align: left;
+            display: block; text-decoration: none; cursor: pointer;
         }
 
         button { text-align: center; font-weight: 600; }
-        
         input:focus, select:focus, button:focus, .clickable-item:focus {
             outline: 2px solid var(--focus-outline);
             background-color: var(--focus-bg);
             border-color: var(--focus-outline);
         }
 
-        /* Elegant News Cards */
+        /* News Cards with Images */
         .news-card {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid var(--border);
-            border-radius: 0;
-            padding: 12px 6px;
-            margin-bottom: 0;
-            box-shadow: none;
+            background: transparent; border: none; border-bottom: 1px solid var(--border);
+            border-radius: 0; padding: 12px 6px; margin-bottom: 0;
         }
         .news-card:last-child { border-bottom: none; }
         .news-card:focus { border-radius: 6px; }
 
         .news-meta {
-            font-size: 0.75em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            font-family: -apple-system, sans-serif; /* Keep meta sans-serif even if reading in serif */
+            font-size: 0.75em; text-transform: uppercase; color: var(--text-muted);
+            margin-bottom: 6px; font-family: -apple-system, sans-serif;
         }
-        .news-title {
-            font-weight: 600;
-            font-size: 1.1em;
-            color: var(--text);
-            margin-bottom: 6px;
-            line-height: 1.3;
-        }
-        .news-snippet {
-            font-size: 0.9em;
-            color: var(--text-muted);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+        
+        .news-card-content { display: flex; gap: 10px; align-items: flex-start; }
+        .news-card-text { flex: 1; }
+        
+        .news-thumbnail {
+            width: 70px; height: 70px; object-fit: cover;
+            border-radius: 6px; background: var(--border); flex-shrink: 0;
         }
 
-        /* Settings Specific */
-        .toggle-btn {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .toggle-status {
-            font-size: 0.8em;
-            font-weight: bold;
-            color: var(--focus-outline);
+        .news-title { font-weight: 600; font-size: 1.1em; margin-bottom: 4px; line-height: 1.3; }
+        .news-snippet {
+            font-size: 0.9em; color: var(--text-muted);
+            display: -webkit-box; -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical; overflow: hidden;
         }
 
         /* Full Text Reader */
         .article-content p { line-height: 1.6; margin-bottom: 1.2em; }
-        .article-content img { max-width: 100%; height: auto; border-radius: 4px; }
+        .article-content img { max-width: 100%; height: auto; border-radius: 6px; margin: 10px 0; background: var(--surface); }
+        .article-content figure { margin: 0; }
 
         /* Hardware Softkey Bar */
         .softkey-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 38px;
-            background: #1a1a1a;
-            color: #ffffff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 10px;
-            font-family: -apple-system, sans-serif;
-            font-size: 14px;
-            font-weight: 600;
-            z-index: 1000;
+            position: fixed; bottom: 0; left: 0; right: 0; height: 38px;
+            background: #1a1a1a; color: #ffffff; display: flex;
+            justify-content: space-between; align-items: center;
+            padding: 0 10px; font-family: -apple-system, sans-serif;
+            font-size: 14px; font-weight: 600; z-index: 1000;
         }
-        .softkey-btn {
-            background: transparent;
-            border: none;
-            color: white;
-            padding: 5px;
-            width: auto;
-            margin: 0;
-            box-shadow: none;
-        }
+        .softkey-btn { background: transparent; border: none; color: white; padding: 5px; width: auto; margin: 0; }
         .softkey-center { font-size: 12px; color: #888888; font-weight: normal; }
+
+        /* Sync Indicator */
+        #sync-status {
+            font-size: 0.8em; text-align: center; color: var(--focus-outline);
+            padding: 5px; display: none; font-weight: bold;
+        }
     </style>
 </head>
 <body class="theme-light font-sans size-medium">
 
-    <!-- VIEW: MIXED HOME FEED -->
     <div id="view-home" class="view active">
         <h1>Latest News</h1>
+        <div id="sync-status">Updating feeds...</div>
         <div id="home-list"></div>
     </div>
 
-    <!-- VIEW: HOME OPTIONS MENU -->
     <div id="view-options" class="view">
         <h1>Options</h1>
-        <button class="clickable-item" onclick="loadMixedFeed()" accesskey="1">1. Refresh All</button>
+        <button class="clickable-item" onclick="forceRefresh()" accesskey="1">1. Force Network Refresh</button>
         <button class="clickable-item" onclick="switchView('channels')" accesskey="2">2. Browse Channels</button>
     </div>
 
-    <!-- VIEW: INDIVIDUAL CHANNELS DIRECTORY -->
     <div id="view-channels" class="view">
         <h1>My Channels</h1>
         <div id="channels-list"></div>
     </div>
 
-    <!-- VIEW: SINGLE CHANNEL HEADLINES -->
     <div id="view-headlines" class="view">
         <h1 id="headlines-title">Channel</h1>
         <div id="headlines-list"></div>
     </div>
 
-    <!-- VIEW: FULL ARTICLE READER -->
     <div id="view-reader" class="view">
         <h1 id="reader-title" style="text-align: left; font-size: 1.4em;">Loading...</h1>
         <div class="section-label" id="reader-meta" style="margin-top: 5px;">Please wait</div>
         <div class="article-content" id="reader-content"></div>
     </div>
 
-    <!-- VIEW: SETTINGS & FEED MANAGEMENT -->
     <div id="view-settings" class="view">
         <h1>Settings</h1>
-        
         <div class="section-label">Display</div>
         <select id="setting-theme" class="clickable-item" onchange="applySettings()">
             <option value="theme-light">Light Mode</option>
@@ -230,18 +159,15 @@
             <option value="size-large">Large Text</option>
         </select>
         
-        <div class="section-label">Home Feed Manager</div>
+        <div class="section-label">Feeds</div>
         <div id="settings-feed-toggles"></div>
-
-        <div class="section-label">Add Custom Feed</div>
+        <div class="section-label">Add Custom</div>
         <input type="text" id="custom-name" placeholder="Name (e.g., The Verge)">
         <input type="url" id="custom-url" placeholder="https://example.com/rss">
-        <button onclick="addNewFeed()">+ Add to Channels</button>
-
-        <button onclick="resetFeedsToDefault()" style="background:#ff3b30; color:white; border:none; margin-top:25px;">Reset All Data</button>
+        <button onclick="addNewFeed()">+ Add Feed</button>
+        <button onclick="resetApp()" style="background:#ff3b30; color:white; border:none; margin-top:25px;">Wipe Data & Reset</button>
     </div>
 
-    <!-- NATIVE SOFTKEY BAR -->
     <div class="softkey-bar">
         <button class="softkey-btn" id="lsk-label" onclick="handleLSKClick()">Options</button>
         <div class="softkey-center">Select</div>
@@ -249,11 +175,13 @@
     </div>
 
     <script>
-        // Array of reliable public proxies for auto-fallback routing
+        const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+        const CACHE_PREFIX = 'rss_article_';
+        
         const proxyList = [
+            "https://api.allorigins.win/raw?url=",
             "https://api.codetabs.com/v1/proxy?quest=",
-            "https://corsproxy.io/?",
-            "https://thingproxy.freeboard.io/fetch/"
+            "https://corsproxy.io/?"
         ];
         
         const defaultFeeds = [
@@ -264,108 +192,283 @@
         ];
 
         let state = {
-            feeds: [],
-            currentView: "home", 
-            activeFeedUrl: "",
-            activeArticleUrl: "",
+            feeds: [], currentView: "home", activeFeedUrl: "", activeArticleUrl: "",
             settings: { theme: "theme-light", font: "font-sans", size: "size-medium" }
         };
 
-        // --- INITIALIZATION ---
+        let prefetchQueue = [];
+        let isPrefetching = false;
+
         window.addEventListener('DOMContentLoaded', () => {
+            cleanupCache(); // Clean old articles on startup
             loadSavedData();
             setupPhysicalKeyBindings();
             loadMixedFeed(); 
         });
 
+        // --- STORAGE & CACHE MANAGEMENT ---
+        function safeSetItem(key, value) {
+            try { localStorage.setItem(key, value); }
+            catch (e) {
+                if (e.name === 'QuotaExceededError') {
+                    cleanupCache(true); // Aggressive cleanup if full
+                    try { localStorage.setItem(key, value); } catch (err) {}
+                }
+            }
+        }
+
+        function cleanupCache(aggressive = false) {
+            const now = Date.now();
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith(CACHE_PREFIX)) {
+                    try {
+                        const item = JSON.parse(localStorage.getItem(key));
+                        // Remove if older than 3 days, or if aggressive mode is on remove older than 1 day
+                        const limit = aggressive ? (24 * 60 * 60 * 1000) : THREE_DAYS_MS;
+                        if (now - item.timestamp > limit) keysToRemove.push(key);
+                    } catch(e) { keysToRemove.push(key); }
+                }
+            }
+            keysToRemove.forEach(k => localStorage.removeItem(k));
+        }
+
         function loadSavedData() {
-            const savedFeeds = localStorage.getItem('rss_feeds');
+            const savedFeeds = localStorage.getItem('rss_feeds_cfg');
             const savedSettings = localStorage.getItem('rss_settings');
-            
             state.feeds = savedFeeds ? JSON.parse(savedFeeds) : JSON.parse(JSON.stringify(defaultFeeds));
             if(savedSettings) state.settings = JSON.parse(savedSettings);
-            
-            document.getElementById('setting-theme').value = state.settings.theme;
-            document.getElementById('setting-font').value = state.settings.font;
-            document.getElementById('setting-size').value = state.settings.size;
             applySettingsToDOM();
         }
 
-        // --- ADVANCED NETWORK ENGINE (MULTI-PROXY) ---
+        // --- NETWORK ENGINE ---
         async function fetchWithFallback(targetUrl) {
             let lastError;
             for (let i = 0; i < proxyList.length; i++) {
                 try {
                     const res = await fetch(proxyList[i] + encodeURIComponent(targetUrl));
-                    if (res.ok) {
-                        return await res.text();
+                    if (res.ok) return await res.text();
+                } catch (err) { lastError = err; }
+            }
+            throw new Error(lastError ? lastError.message : "Network/Proxy block.");
+        }
+
+        // --- FEED RENDERING & SYNCING ---
+        function forceRefresh() {
+            localStorage.removeItem('rss_feed_cache');
+            loadMixedFeed();
+        }
+
+        async function loadMixedFeed() {
+            switchView('home');
+            const container = document.getElementById('home-list');
+            const syncStatus = document.getElementById('sync-status');
+            
+            // 1. Instantly load from cache
+            let cachedFeeds = JSON.parse(localStorage.getItem('rss_feed_cache') || '[]');
+            const now = Date.now();
+            cachedFeeds = cachedFeeds.filter(a => (now - a.timestamp) < THREE_DAYS_MS);
+            
+            if (cachedFeeds.length > 0) {
+                renderArticles(cachedFeeds, container);
+                syncStatus.style.display = 'block'; // Show syncing indicator
+            } else {
+                container.innerHTML = "<div style='text-align:center; padding:30px 10px;'>Syncing latest news...</div>";
+            }
+
+            // 2. Fetch network updates
+            const enabledFeeds = state.feeds.filter(f => f.enabled !== false);
+            if(enabledFeeds.length === 0) {
+                container.innerHTML = "<div style='text-align:center; padding:20px;'>All feeds disabled.</div>";
+                syncStatus.style.display = 'none'; return;
+            }
+
+            let newArticles = [];
+            await Promise.allSettled(enabledFeeds.map(async feed => {
+                // Primary: rss2json (Bypasses Cloudflare on Prothom Alo)
+                try {
+                    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`);
+                    const data = await res.json();
+                    if (data.status === 'ok') {
+                        data.items.forEach(item => {
+                            newArticles.push({
+                                title: item.title, link: item.link, source: feed.name,
+                                desc: (item.description || "").replace(/<\/?[^>]+(>|$)/g, "").trim(),
+                                timestamp: new Date(item.pubDate).getTime(),
+                                thumbnail: item.thumbnail || (item.enclosure && item.enclosure.link) || null
+                            });
+                        });
+                        return; // Success, stop here for this feed
                     }
-                } catch (err) {
-                    lastError = err;
-                    console.warn(`Proxy ${i + 1} failed, trying next...`);
-                }
+                } catch(e) {}
+
+                // Fallback: Raw XML via Proxies
+                try {
+                    const text = await fetchWithFallback(feed.url);
+                    const doc = new DOMParser().parseFromString(text, "text/xml");
+                    doc.querySelectorAll("item, entry").forEach(item => {
+                        const title = item.querySelector("title")?.textContent || "Untitled";
+                        const linkNode = item.querySelector("link");
+                        const link = linkNode ? (linkNode.textContent || linkNode.getAttribute("href")) : "";
+                        const dateText = item.querySelector("pubDate, updated, published")?.textContent;
+                        let thumb = item.querySelector("thumbnail, content, image")?.getAttribute("url") || null;
+                        
+                        newArticles.push({
+                            title, link, source: feed.name, thumbnail: thumb,
+                            desc: (item.querySelector("description, summary")?.textContent || "").replace(/<\/?[^>]+(>|$)/g, "").trim(),
+                            timestamp: dateText ? new Date(dateText).getTime() : Date.now()
+                        });
+                    });
+                } catch(e) {}
+            }));
+            
+            syncStatus.style.display = 'none';
+
+            if (newArticles.length > 0) {
+                // Merge, Deduplicate, Sort
+                const merged = [...newArticles, ...cachedFeeds];
+                const unique = Array.from(new Map(merged.map(item => [item.link, item])).values());
+                unique.sort((a, b) => b.timestamp - a.timestamp);
+                
+                const finalFeeds = unique.slice(0, 60);
+                safeSetItem('rss_feed_cache', JSON.stringify(finalFeeds));
+                renderArticles(finalFeeds, container);
+                
+                // 3. Queue articles for background pre-fetching
+                startPrefetching(finalFeeds.slice(0, 15));
+            } else if (cachedFeeds.length === 0) {
+                 container.innerHTML = "<div style='text-align:center; padding:20px; color:red;'>Offline or Feeds blocked.</div>";
             }
-            throw new Error(lastError ? lastError.message : "All proxies failed or access denied by publisher.");
         }
 
-        // --- SETTINGS & STORAGE ---
-        function applySettings() {
-            state.settings.theme = document.getElementById('setting-theme').value;
-            state.settings.font = document.getElementById('setting-font').value;
-            state.settings.size = document.getElementById('setting-size').value;
-            localStorage.setItem('rss_settings', JSON.stringify(state.settings));
-            applySettingsToDOM();
-        }
-
-        function applySettingsToDOM() {
-            document.body.className = `${state.settings.theme} ${state.settings.font} ${state.settings.size}`;
-        }
-
-        function saveFeedsToStorage() {
-            localStorage.setItem('rss_feeds', JSON.stringify(state.feeds));
-        }
-
-        function resetFeedsToDefault() {
-            if(confirm("Factory reset reader app? All custom feeds will be lost.")) {
-                state.feeds = JSON.parse(JSON.stringify(defaultFeeds));
-                saveFeedsToStorage();
-                switchView('home');
-                loadMixedFeed();
-            }
-        }
-
-        function toggleFeedStatus(index) {
-            state.feeds[index].enabled = !state.feeds[index].enabled;
-            saveFeedsToStorage();
-            renderSettingsFeedToggles();
-        }
-
-        function renderSettingsFeedToggles() {
-            const container = document.getElementById('settings-feed-toggles');
+        function renderArticles(articles, container) {
             container.innerHTML = "";
-            state.feeds.forEach((feed, index) => {
-                const btn = document.createElement('button');
-                btn.className = "clickable-item toggle-btn";
-                const isEnabled = feed.enabled !== false; 
-                btn.innerHTML = `<span>${feed.name}</span> <span class="toggle-status">${isEnabled ? '[ ON ]' : '[ OFF ]'}</span>`;
-                btn.onclick = () => toggleFeedStatus(index);
-                container.appendChild(btn);
+            articles.forEach(article => {
+                const timeStr = formatTimeAgo(article.timestamp);
+                const metaText = timeStr ? `${article.source} • ${timeStr}` : article.source;
+                const thumbHtml = article.thumbnail ? `<img src="${article.thumbnail}" class="news-thumbnail" loading="lazy">` : '';
+                
+                const card = document.createElement('div');
+                card.className = "news-card clickable-item";
+                card.tabIndex = 0;
+                card.innerHTML = `
+                    <div class="news-meta">${metaText}</div>
+                    <div class="news-card-content">
+                        <div class="news-card-text">
+                            <div class="news-title">${article.title}</div>
+                            <div class="news-snippet">${article.desc.substring(0, 90)}...</div>
+                        </div>
+                        ${thumbHtml}
+                    </div>
+                `;
+                card.onclick = () => loadFullArticle(article.link, article.title, metaText);
+                card.onkeydown = (e) => { if(e.key === 'Enter') loadFullArticle(article.link, article.title, metaText); };
+                container.appendChild(card);
             });
         }
 
-        function addNewFeed() {
-            const name = document.getElementById('custom-name').value.trim();
-            const url = document.getElementById('custom-url').value.trim();
-            if(!name || !url) { alert("Incomplete input."); return; }
-            state.feeds.push({ id: Date.now().toString(), name, url, enabled: true });
-            saveFeedsToStorage();
-            renderSettingsFeedToggles();
-            document.getElementById('custom-name').value = "";
-            document.getElementById('custom-url').value = "";
-            alert("Feed Added!");
+        // --- BACKGROUND PRE-FETCHING ---
+        function startPrefetching(articles) {
+            const urlsToFetch = articles
+                .filter(a => a.link && !localStorage.getItem(CACHE_PREFIX + a.link))
+                .map(a => a.link);
+            
+            prefetchQueue = [...new Set([...prefetchQueue, ...urlsToFetch])];
+            if (!isPrefetching) processPrefetchQueue();
         }
 
-        // --- ROUTING ---
+        async function processPrefetchQueue() {
+            if (prefetchQueue.length === 0) { isPrefetching = false; return; }
+            isPrefetching = true;
+            
+            const url = prefetchQueue.shift();
+            if(!localStorage.getItem(CACHE_PREFIX + url)) {
+                try {
+                    const html = await extractArticleHtml(url);
+                    if (html && html.length > 100) {
+                        safeSetItem(CACHE_PREFIX + url, JSON.stringify({ content: html, timestamp: Date.now() }));
+                    }
+                } catch (e) {} // Fail silently in background
+            }
+            
+            setTimeout(processPrefetchQueue, 1500); // Wait 1.5s to avoid rate limiting
+        }
+
+        // --- ARTICLE CONTENT EXTRACTION ---
+        async function extractArticleHtml(url) {
+            const htmlText = await fetchWithFallback(url);
+            const doc = new DOMParser().parseFromString(htmlText, "text/html");
+            const targetArea = doc.querySelector('article, main, .article-body, .story-body, .entry-content, [itemprop="articleBody"]');
+            
+            let parsedHtml = "";
+            const root = targetArea || doc.body;
+
+            root.querySelectorAll('p, h2, h3, img').forEach(n => {
+                if (n.tagName === 'IMG') {
+                    let src = n.getAttribute('src') || n.getAttribute('data-src');
+                    if (src && !src.startsWith('data:') && !src.includes('.svg')) {
+                        if (src.startsWith('/')) {
+                            try { src = new URL(src, url).href; } catch(e){}
+                        }
+                        parsedHtml += `<img src="${src}" loading="lazy" />`;
+                    }
+                } else if (n.textContent.trim().length > 25) {
+                    parsedHtml += `<${n.tagName.toLowerCase()}>${n.innerHTML}</${n.tagName.toLowerCase()}>`;
+                }
+            });
+
+            // Clean up bad tags inside content
+            parsedHtml = parsedHtml.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+            parsedHtml = parsedHtml.replace(/style="[^"]*"/gi, "");
+            parsedHtml = parsedHtml.replace(/class="[^"]*"/gi, "");
+            
+            return parsedHtml;
+        }
+
+        async function loadFullArticle(url, title, meta) {
+            state.activeArticleUrl = url;
+            switchView('reader');
+            
+            document.getElementById('reader-title').innerText = title;
+            document.getElementById('reader-meta').innerText = meta || 'Article View';
+            const content = document.getElementById('reader-content');
+            
+            // 1. Check local cache first
+            const cached = localStorage.getItem(CACHE_PREFIX + url);
+            if (cached) {
+                const data = JSON.parse(cached);
+                content.innerHTML = data.content;
+                return;
+            }
+
+            // 2. Fetch live if not cached
+            content.innerHTML = "<div style='text-align:center; padding:40px 10px;'>Downloading full text & images...</div>";
+            try {
+                const html = await extractArticleHtml(url);
+                if (html && html.length > 100) {
+                    content.innerHTML = html;
+                    safeSetItem(CACHE_PREFIX + url, JSON.stringify({ content: html, timestamp: Date.now() }));
+                } else {
+                    throw new Error("Empty extraction");
+                }
+            } catch (err) {
+                content.innerHTML = `<p style="color:red; text-align:center;">Publisher blocked content extraction.</p><button class='clickable-item' onclick='window.open("${url}", "_blank")'>Open in External Browser</button>`;
+            }
+        }
+
+        // --- UTILS & SETTINGS ---
+        function formatTimeAgo(timestamp) {
+            if(!timestamp) return "";
+            const seconds = Math.floor((Date.now() - timestamp) / 1000);
+            let interval = seconds / 3600;
+            if (interval >= 1 && interval < 24) return Math.floor(interval) + "h ago";
+            interval = seconds / 60;
+            if (interval >= 1 && interval < 60) return Math.floor(interval) + "m ago";
+            if (seconds < 60) return "Just now";
+            return new Date(timestamp).toLocaleDateString();
+        }
+
         function switchView(viewName) {
             state.currentView = viewName;
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -380,255 +483,84 @@
             updateSoftkeyLabels();
         }
 
-        function formatTimeAgo(dateObj) {
-            if(!dateObj || isNaN(dateObj.getTime())) return "";
-            const seconds = Math.floor((new Date() - dateObj) / 1000);
-            let interval = seconds / 3600;
-            if (interval >= 1 && interval < 24) return Math.floor(interval) + "h ago";
-            interval = seconds / 60;
-            if (interval >= 1 && interval < 60) return Math.floor(interval) + "m ago";
-            if (seconds < 60) return "Just now";
-            return dateObj.toLocaleDateString();
+        function applySettings() {
+            state.settings.theme = document.getElementById('setting-theme').value;
+            state.settings.font = document.getElementById('setting-font').value;
+            state.settings.size = document.getElementById('setting-size').value;
+            localStorage.setItem('rss_settings', JSON.stringify(state.settings));
+            applySettingsToDOM();
         }
 
-        // --- DATA FETCHING ---
-        async function loadMixedFeed() {
-            switchView('home');
-            const container = document.getElementById('home-list');
-            container.innerHTML = "<div style='text-align:center; padding:30px 10px; color:var(--text-muted);'>Syncing latest articles...</div>";
-
-            const enabledFeeds = state.feeds.filter(f => f.enabled !== false);
-            if(enabledFeeds.length === 0) {
-                container.innerHTML = "<div style='text-align:center; padding:20px;'>All feeds disabled. Go to Settings.</div>";
-                return;
-            }
-
-            let allArticles = [];
-            let successfulFeeds = 0;
-
-            await Promise.allSettled(enabledFeeds.map(async feed => {
-                try {
-                    const text = await fetchWithFallback(feed.url);
-                    const doc = new DOMParser().parseFromString(text, "text/xml");
-                    
-                    if (doc.querySelector("parsererror")) throw new Error("Invalid XML");
-                    
-                    const items = doc.querySelectorAll("item, entry");
-                    if (items.length > 0) successfulFeeds++;
-
-                    items.forEach(item => {
-                        const title = item.querySelector("title")?.textContent || "Untitled";
-                        const linkNode = item.querySelector("link");
-                        const link = linkNode ? (linkNode.textContent || linkNode.getAttribute("href")) : "";
-                        const desc = (item.querySelector("description, summary")?.textContent || "").replace(/<\/?[^>]+(>|$)/g, "").trim();
-                        
-                        const dateText = item.querySelector("pubDate, updated, published")?.textContent;
-                        const dateObj = dateText ? new Date(dateText) : null;
-                        const timestamp = dateObj && !isNaN(dateObj.getTime()) ? dateObj.getTime() : 0;
-
-                        allArticles.push({ title, link, desc, timestamp, dateObj, source: feed.name });
-                    });
-                } catch(e) { console.warn("Failed syncing: " + feed.name); }
-            }));
-
-            allArticles.sort((a, b) => b.timestamp - a.timestamp);
-            container.innerHTML = "";
-            
-            if(allArticles.length === 0) {
-                container.innerHTML = "<div style='text-align:center; padding:20px; color:red;'>Network Error: All proxies blocked by publishers. Try again later.</div>";
-                return;
-            }
-
-            if(successfulFeeds < enabledFeeds.length) {
-                const warning = document.createElement('div');
-                warning.style = "text-align:center; font-size:12px; color:orange; margin-bottom:10px;";
-                warning.innerText = "Some feeds were blocked and could not be loaded.";
-                container.appendChild(warning);
-            }
-
-            allArticles.slice(0, 40).forEach(article => {
-                const timeStr = formatTimeAgo(article.dateObj);
-                const metaText = timeStr ? `${article.source} • ${timeStr}` : article.source;
-                
-                const card = document.createElement('div');
-                card.className = "news-card clickable-item";
-                card.tabIndex = 0;
-                card.innerHTML = `
-                    <div class="news-meta">${metaText}</div>
-                    <div class="news-title">${article.title}</div>
-                    <div class="news-snippet">${article.desc.substring(0, 100)}${article.desc.length > 100 ? '...' : ''}</div>
-                `;
-                card.onclick = () => loadFullArticle(article.link, article.title, metaText);
-                card.onkeydown = (e) => { if(e.key === 'Enter') loadFullArticle(article.link, article.title, metaText); };
-                container.appendChild(card);
-            });
+        function applySettingsToDOM() {
+            document.getElementById('setting-theme').value = state.settings.theme;
+            document.getElementById('setting-font').value = state.settings.font;
+            document.getElementById('setting-size').value = state.settings.size;
+            document.body.className = `${state.settings.theme} ${state.settings.font} ${state.settings.size}`;
         }
 
-        function renderChannelsList() {
-            const container = document.getElementById('channels-list');
+        function saveFeeds() { localStorage.setItem('rss_feeds_cfg', JSON.stringify(state.feeds)); }
+
+        function renderSettingsFeedToggles() {
+            const container = document.getElementById('settings-feed-toggles');
             container.innerHTML = "";
-            state.feeds.forEach(feed => {
+            state.feeds.forEach((feed, i) => {
                 const btn = document.createElement('button');
-                btn.className = "clickable-item";
-                btn.innerText = feed.name;
-                btn.onclick = () => loadSingleChannel(feed.url, feed.name);
+                btn.className = "clickable-item toggle-btn";
+                btn.innerHTML = `<span style="display:flex; justify-content:space-between; width:100%;"><span>${feed.name}</span> <span style="color:var(--focus-outline)">${feed.enabled !== false ? '[ON]' : '[OFF]'}</span></span>`;
+                btn.onclick = () => {
+                    state.feeds[i].enabled = !(feed.enabled !== false);
+                    saveFeeds(); renderSettingsFeedToggles(); forceRefresh();
+                };
                 container.appendChild(btn);
             });
         }
 
-        async function loadSingleChannel(url, name) {
-            state.activeFeedUrl = url;
-            switchView('headlines');
-            document.getElementById('headlines-title').innerText = name;
-            const container = document.getElementById('headlines-list');
-            container.innerHTML = "<div style='text-align:center; padding:30px;'>Loading...</div>";
-
-            try {
-                const text = await fetchWithFallback(url);
-                const doc = new DOMParser().parseFromString(text, "text/xml");
-                if (doc.querySelector("parsererror")) throw new Error("Invalid XML format");
-
-                const items = doc.querySelectorAll("item, entry");
-                container.innerHTML = "";
-
-                if(items.length === 0) throw new Error("No articles found");
-
-                items.forEach(item => {
-                    const title = item.querySelector("title")?.textContent || "Untitled";
-                    const linkNode = item.querySelector("link");
-                    const link = linkNode ? (linkNode.textContent || linkNode.getAttribute("href")) : "";
-                    const dateText = item.querySelector("pubDate, updated")?.textContent;
-                    const dateObj = dateText ? new Date(dateText) : null;
-                    const timeStr = formatTimeAgo(dateObj);
-                    
-                    const card = document.createElement('div');
-                    card.className = "news-card clickable-item";
-                    card.tabIndex = 0;
-                    card.innerHTML = `
-                        <div class="news-meta">${timeStr || 'Recent'}</div>
-                        <div class="news-title">${title}</div>
-                    `;
-                    card.onclick = () => loadFullArticle(link, title, name);
-                    card.onkeydown = (e) => { if(e.key === 'Enter') loadFullArticle(link, title, name); };
-                    container.appendChild(card);
-                });
-            } catch (err) {
-                container.innerHTML = `<div style='text-align:center; color:red; padding:20px;'>Feed blocked or unavailable.<br><br>Error: ${err.message}</div>`;
+        function resetApp() {
+            if(confirm("Factory reset? All saved feeds and cache will be deleted.")) {
+                localStorage.clear();
+                window.location.reload();
             }
         }
 
-        async function loadFullArticle(url, title, meta) {
-            state.activeArticleUrl = url;
-            switchView('reader');
-            
-            document.getElementById('reader-title').innerText = title;
-            document.getElementById('reader-meta').innerText = meta || 'Article View';
-            const content = document.getElementById('reader-content');
-            content.innerHTML = "<div style='text-align:center; padding:40px 10px; color:var(--text-muted);'>Extracting text...</div>";
-
-            try {
-                const htmlText = await fetchWithFallback(url);
-                const doc = new DOMParser().parseFromString(htmlText, "text/html");
-
-                const targetArea = doc.querySelector('article, main, .article-body, .story-body, .entry-content');
-                let parsedHtml = "";
-
-                if(targetArea) {
-                    targetArea.querySelectorAll('p, h2, h3').forEach(n => {
-                        if(n.textContent.trim().length > 10) parsedHtml += `<${n.tagName.toLowerCase()}>${n.innerHTML}</${n.tagName.toLowerCase()}>`;
-                    });
-                }
-
-                if(!parsedHtml || parsedHtml.length < 200) {
-                    parsedHtml = "";
-                    doc.querySelectorAll('p').forEach(p => {
-                        if(p.textContent.trim().length > 40) parsedHtml += `<p>${p.innerHTML}</p>`;
-                    });
-                }
-
-                parsedHtml = parsedHtml.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
-                parsedHtml = parsedHtml.replace(/style="[^"]*"/gi, "");
-                
-                if(!parsedHtml) {
-                    content.innerHTML = `<button class='clickable-item' onclick='window.open("${url}", "_blank")'>Open External Browser</button>`;
-                } else {
-                    content.innerHTML = parsedHtml;
-                }
-            } catch (err) {
-                content.innerHTML = `<p style="color:red; text-align:center;">Publisher blocked content extraction.</p><button class='clickable-item' onclick='window.open("${url}", "_blank")'>Open in External Browser</button>`;
-            }
-        }
-
-        // --- HARDWARE NAVIGATION LOGIC ---
+        // --- HARDWARE NAVIGATION ---
         function updateSoftkeyLabels() {
-            const lsk = document.getElementById('lsk-label');
-            const rsk = document.getElementById('rsk-label');
-
-            if (state.currentView === "home") {
-                lsk.innerText = "Options"; rsk.innerText = "Settings";
-            } else if (state.currentView === "options") {
-                lsk.innerText = "Select"; rsk.innerText = "Back";
-            } else if (state.currentView === "channels") {
-                lsk.innerText = "Select"; rsk.innerText = "Back";
-            } else if (state.currentView === "headlines") {
-                lsk.innerText = "Select"; rsk.innerText = "Back";
-            } else if (state.currentView === "reader") {
-                lsk.innerText = "External"; rsk.innerText = "Back";
-            } else if (state.currentView === "settings") {
-                lsk.innerText = "Save"; rsk.innerText = "Back";
-            }
+            const lsk = document.getElementById('lsk-label'), rsk = document.getElementById('rsk-label');
+            const map = {
+                "home": ["Options", "Settings"], "options": ["Select", "Back"],
+                "channels": ["Select", "Back"], "headlines": ["Select", "Back"],
+                "reader": ["External", "Back"], "settings": ["Save", "Back"]
+            };
+            lsk.innerText = map[state.currentView][0]; rsk.innerText = map[state.currentView][1];
         }
 
         function handleLSKClick() {
-            if (state.currentView === "home") {
-                switchView('options');
-            } else if (state.currentView === "options") {
-                const active = document.activeElement;
-                if(active && active.tagName === 'BUTTON') active.click();
-            } else if (state.currentView === "channels" || state.currentView === "headlines") {
-                const active = document.activeElement;
-                if(active && active.classList.contains('clickable-item')) active.click();
-            } else if (state.currentView === "reader") {
-                window.open(state.activeArticleUrl, '_blank');
-            } else if (state.currentView === "settings") {
-                applySettings();
-                switchView('home');
+            if (state.currentView === "home") switchView('options');
+            else if (["options", "channels", "headlines"].includes(state.currentView)) {
+                const act = document.activeElement;
+                if(act && (act.tagName === 'BUTTON' || act.classList.contains('clickable-item'))) act.click();
             }
+            else if (state.currentView === "reader") window.open(state.activeArticleUrl, '_blank');
+            else if (state.currentView === "settings") { applySettings(); switchView('home'); }
         }
 
         function handleRSKClick() {
-            if (state.currentView === "home") {
-                switchView('settings');
-            } else if (state.currentView === "options") {
-                switchView('home');
-            } else if (state.currentView === "channels") {
-                switchView('home');
-            } else if (state.currentView === "headlines") {
-                switchView('channels');
-            } else if (state.currentView === "reader") {
-                if(state.activeFeedUrl) switchView('headlines');
-                else switchView('home');
-            } else if (state.currentView === "settings") {
-                switchView('home');
-            }
+            if (state.currentView === "home") switchView('settings');
+            else if (["options", "channels", "settings"].includes(state.currentView)) switchView('home');
+            else if (state.currentView === "headlines") switchView('channels');
+            else if (state.currentView === "reader") switchView('home');
         }
 
         function setupPhysicalKeyBindings() {
             window.addEventListener('keydown', (e) => {
-                if (e.key === 'SoftLeft' || e.key === 'F1' || e.keyCode === 118) {
-                    e.preventDefault(); handleLSKClick();
-                }
-                if (e.key === 'SoftRight' || e.key === 'F2' || e.keyCode === 119) {
-                    e.preventDefault(); handleRSKClick();
-                }
+                if (['SoftLeft', 'F1'].includes(e.key) || e.keyCode === 118) { e.preventDefault(); handleLSKClick(); }
+                if (['SoftRight', 'F2'].includes(e.key) || e.keyCode === 119) { e.preventDefault(); handleRSKClick(); }
                 
                 if (state.currentView === 'home' || state.currentView === 'options') {
-                    if (e.key === '1') { e.preventDefault(); loadMixedFeed(); }
+                    if (e.key === '1') { e.preventDefault(); forceRefresh(); }
                     if (e.key === '2') { e.preventDefault(); switchView('channels'); }
                 }
             });
         }
     </script>
-
 </body>
 </html>
