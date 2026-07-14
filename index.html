@@ -7,102 +7,93 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&family=Noto+Sans+Bengali:wght@400;600&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&family=Noto+Sans+Bengali:wght@400;600&family=Open+Sans:wght@400;600&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg: #fafafa;
-            --surface: #ffffff;
-            --text: #1a1a1a;
-            --text-muted: #6e6e73;
-            --focus-bg: rgba(0, 0, 0, 0.45); 
-            --focus-text: #ffffff;
-            --border: #e5e5ea;
+            --bg: #fafafa; --surface: #ffffff; --text: #1a1a1a;
+            --text-muted: #6e6e73; --focus-bg: rgba(0,0,0,0.45);
+            --focus-text: #ffffff; --border: #e5e5ea;
         }
+        body.theme-dark  { --bg:#000; --surface:#111; --text:#eee; --text-muted:#999; --border:#333; --focus-bg:rgba(255,255,255,0.25); }
+        body.theme-sepia { --bg:#f4ecd8; --surface:#fdf6e3; --text:#433422; --text-muted:#8f7762; --border:#e4d9c4; --focus-bg:rgba(208,144,80,0.6); }
 
-        body.theme-dark  { --bg: #000000; --surface: #111111; --text: #eeeeee; --text-muted: #999999; --border: #333333; --focus-bg: rgba(255,255,255,0.25); }
-        body.theme-sepia { --bg: #f4ecd8; --surface: #fdf6e3; --text: #433422; --text-muted: #8f7762; --border: #e4d9c4; --focus-bg: rgba(208,144,80,0.6); }
-
-        body.font-sans { font-family: "Open Sans", -apple-system, sans-serif; }
-        body.font-noto { font-family: "Noto Sans Bengali", sans-serif; }
-        body.font-hind { font-family: "Hind Siliguri", sans-serif; }
+        body.font-sans  { font-family: "Open Sans", -apple-system, sans-serif; }
+        body.font-noto  { font-family: "Noto Sans Bengali", sans-serif; }
+        body.font-hind  { font-family: "Hind Siliguri", sans-serif; }
+        body.font-tiro  { font-family: "Tiro Bangla", serif; }
 
         body.size-small  { font-size: 11px; }
         body.size-medium { font-size: 12.5px; }
         body.size-large  { font-size: 15px; }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
-        
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); color: var(--text); overflow: hidden; }
+        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none; }
+        html, body { margin:0; padding:0; width:100%; height:100%; background:var(--bg); color:var(--text); overflow:hidden; }
+        #app { display:flex; flex-direction:column; height:100vh; position:relative; }
 
-        #app { display: flex; flex-direction: column; height: 100vh; position: relative; }
+        .view { display:none; flex:1; overflow-y:auto; padding:0; scrollbar-width:none; }
+        .view::-webkit-scrollbar { display:none; }
+        .view.active { display:block; }
 
-        .view { display: none; flex: 1; overflow-y: auto; padding: 0; scrollbar-width: none; }
-        .view::-webkit-scrollbar { display: none; }
-        .view.active { display: block; }
-
-        .padded-view { padding: 8px; }
-        .section-label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); margin: 12px 0 4px 0; border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+        .padded-view { padding:8px; }
+        .section-label { font-size:10px; text-transform:uppercase; color:var(--text-muted); margin:12px 0 4px 0; border-bottom:1px solid var(--border); padding-bottom:2px; }
 
         .clickable-item, input, select, button {
-            display: flex; align-items: center; width: 100%;
-            padding: 8px 6px; border: none; border-bottom: 1px solid var(--border);
-            background: transparent; color: var(--text);
-            font-size: inherit; font-family: inherit;
-            text-align: left; cursor: pointer; outline: none; margin: 0;
-            border-radius: 0;
+            display:flex; align-items:center; width:100%;
+            padding:8px 6px; border:none; border-bottom:1px solid var(--border);
+            background:transparent; color:var(--text);
+            font-size:inherit; font-family:inherit;
+            text-align:left; cursor:pointer; outline:none; margin:0; border-radius:0;
         }
-
-        input, select { border: 1px solid var(--border); padding: 6px; margin-bottom: 6px; background: var(--surface); }
-
+        input, select { border:1px solid var(--border); padding:6px; margin-bottom:6px; background:var(--surface); }
         .clickable-item:focus, input:focus, select:focus, button:focus {
-            background-color: var(--focus-bg);
-            color: var(--focus-text);
-            border-color: transparent;
+            background-color:var(--focus-bg); color:var(--focus-text); border-color:transparent;
         }
 
-        .news-card-content { display: flex; gap: 8px; width: 100%; align-items: center; justify-content: space-between; }
-        .news-thumbnail { width: 38px; height: 38px; border-radius: 3px; object-fit: cover; background: var(--border); flex-shrink: 0; }
-        .news-card-text { flex: 1; overflow: hidden; text-align: left; }
-        .news-title { font-weight: 600; font-size: 12px; line-height: 1.3; margin-bottom: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
-        .news-meta { font-size: 10px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .clickable-item:focus .news-meta { color: rgba(255,255,255,0.85); }
-        .clickable-item:focus .cache-tick { color: #fff !important; }
+        .news-card-content { display:flex; gap:8px; width:100%; align-items:center; justify-content:space-between; }
+        .news-thumbnail { width:38px; height:38px; border-radius:3px; object-fit:cover; background:var(--border); flex-shrink:0; }
+        .news-card-text { flex:1; overflow:hidden; text-align:left; }
+        .news-title { font-weight:600; font-size:12px; line-height:1.3; margin-bottom:2px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis; }
+        .news-meta { font-size:10px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .clickable-item:focus .news-meta { color:rgba(255,255,255,0.85); }
+        .clickable-item:focus .cache-tick { color:#fff !important; }
 
-        #view-reader { padding: 10px 8px; user-select: text; -webkit-user-select: text; }
-        #reader-title { font-size: 15px; font-weight: bold; margin: 0 0 4px 0; line-height: 1.3; }
-        #reader-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
-        .article-content p { line-height: 1.5; margin-bottom: 1em; }
-        .article-content img { max-width: 100%; height: auto; border-radius: 4px; margin: 8px 0; }
+        #view-reader { padding:10px 8px; user-select:text; -webkit-user-select:text; }
+        #reader-title { font-size:15px; font-weight:bold; margin:0 0 4px 0; line-height:1.3; }
+        #reader-meta { font-size:11px; color:var(--text-muted); margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+        .article-content p { line-height:1.6; margin-bottom:1em; }
+        .article-content img { max-width:100%; height:auto; border-radius:4px; margin:8px 0; }
 
-        /* Options overlay — full-screen popup launched by LSK */
+        /* Extraction source badge */
+        .src-badge { display:inline-block; font-size:9px; padding:1px 4px; border-radius:2px; margin-left:4px; vertical-align:middle; }
+        .src-live   { background:#d4edda; color:#155724; }
+        .src-archive{ background:#fff3cd; color:#856404; }
+        .src-rss    { background:#cce5ff; color:#004085; }
+        .src-fail   { background:#f8d7da; color:#721c24; }
+
+        /* Options overlay */
         #options-overlay {
-            display: none;
-            position: absolute; top: 0; left: 0; right: 0; bottom: 28px;
-            background: var(--bg);
-            z-index: 500;
-            flex-direction: column;
+            display:none; position:absolute; top:0; left:0; right:0; bottom:28px;
+            background:var(--bg); z-index:500; flex-direction:column;
         }
-        #options-overlay.active { display: flex; }
+        #options-overlay.active { display:flex; }
 
         .softkey-bar {
-            height: 28px; background: #1a1a1a; color: #ffffff;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 4px; font-family: "Open Sans", sans-serif;
-            font-size: 11px; font-weight: 600; flex-shrink: 0; z-index: 1000;
+            height:28px; background:#1a1a1a; color:#fff;
+            display:flex; justify-content:space-between; align-items:center;
+            padding:0 4px; font-family:"Open Sans",sans-serif;
+            font-size:11px; font-weight:600; flex-shrink:0; z-index:1000;
         }
-        .softkey-btn { background: transparent; border: none; color: white; padding: 0 4px; margin: 0; width: auto; font-size: 11px; cursor: pointer; }
-        .softkey-btn:focus { background: transparent; color: #ccc; }
-        .softkey-center { font-size: 11px; color: #ccc; font-weight: bold; text-transform: uppercase; }
+        .softkey-btn { background:transparent; border:none; color:white; padding:0 4px; margin:0; width:auto; font-size:11px; }
+        .softkey-center { font-size:11px; color:#ccc; font-weight:bold; text-transform:uppercase; }
 
-        #sync-status { font-size: 10px; text-align: center; color: var(--text-muted); padding: 4px; display: none; font-weight: bold; background: var(--surface); border-bottom: 1px solid var(--border); }
-        .empty-state { text-align: center; padding: 30px 10px; font-size: 12px; color: var(--text-muted); }
+        #sync-status { font-size:10px; text-align:center; color:var(--text-muted); padding:4px; display:none; font-weight:bold; background:var(--surface); border-bottom:1px solid var(--border); }
+        .empty-state { text-align:center; padding:30px 10px; font-size:12px; color:var(--text-muted); }
     </style>
 </head>
 <body class="theme-light font-sans size-medium">
-
 <div id="app">
-    <!-- Main views -->
+
     <div id="view-home" class="view active">
         <div id="sync-status">Updating feeds...</div>
         <div id="home-list"></div>
@@ -126,8 +117,9 @@
         <div class="section-label">Typography & Display</div>
         <select id="setting-font" class="clickable-item" onchange="applySettings()">
             <option value="font-sans">Open Sans (EN)</option>
-            <option value="font-noto">Noto Sans (BN)</option>
-            <option value="font-hind">Hind Siliguri (BN)</option>
+            <option value="font-noto">Noto Sans Bengali</option>
+            <option value="font-hind">Hind Siliguri</option>
+            <option value="font-tiro">Tiro Bangla (Serif)</option>
         </select>
         <select id="setting-theme" class="clickable-item" onchange="applySettings()">
             <option value="theme-light">Light Mode</option>
@@ -140,540 +132,573 @@
             <option value="size-large">Large Text</option>
         </select>
         <div class="section-label">Toggle Feeds</div>
-        <div id="settings-feed-toggles" style="margin-bottom: 10px;"></div>
+        <div id="settings-feed-toggles" style="margin-bottom:10px;"></div>
         <div class="section-label">System</div>
-        <button class="clickable-item" onclick="resetApp()" style="color:#ff3b30; font-weight:bold; justify-content:center;">Wipe Cache & Reset</button>
+        <button class="clickable-item" onclick="resetApp()" style="color:#ff3b30;font-weight:bold;justify-content:center;">Wipe Cache & Reset</button>
     </div>
 
-    <!-- Options overlay: full-screen popup, launched by LSK (Escape key) -->
+    <!-- Options overlay: full-screen popup launched by LSK (Escape) -->
     <div id="options-overlay">
-        <button class="clickable-item" id="opt-refresh"  onclick="closeOptions(); forceRefresh();">1. Force Refresh</button>
-        <button class="clickable-item" id="opt-channels" onclick="closeOptions(); switchView('channels');">2. Browse Channels</button>
-        <button class="clickable-item" id="opt-settings" onclick="closeOptions(); switchView('settings');">3. Settings</button>
+        <button class="clickable-item" onclick="closeOptions(); forceRefresh();">1. Force Refresh</button>
+        <button class="clickable-item" onclick="closeOptions(); switchView('channels');">2. Browse Channels</button>
+        <button class="clickable-item" onclick="closeOptions(); switchView('settings');">3. Settings</button>
     </div>
 
     <div class="softkey-bar">
-        <!-- LSK visual label only — interaction handled via Escape keydown -->
         <span class="softkey-btn" id="lsk-label">Options</span>
         <div class="softkey-center" id="csk-label">Select</div>
-        <!-- RSK visual label only — hardware RSK fires history.back() / 'back' event -->
         <span class="softkey-btn" id="rsk-label">Exit</span>
     </div>
 </div>
 
 <script>
-    const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
-    const CACHE_PREFIX  = 'rss_article_';
+const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+const CACHE_PREFIX  = 'rss_article_';
 
-    const proxyList = [
-        "https://api.allorigins.win/raw?url=",
-        "https://api.codetabs.com/v1/proxy?quest=",
-        "https://corsproxy.io/?"
-    ];
+// ── PROXY STRATEGIES ──────────────────────────────────────────────────────────
+// Each entry is a function that returns a fetch Promise.
+// We cycle through them with per-domain awareness.
+const PROXY_LIST = [
+    url => fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(url)),
+    url => fetch("https://corsproxy.io/?" + encodeURIComponent(url)),
+    url => fetch("https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(url)),
+];
 
-    const defaultFeeds = [
-        { id: "bbc",  name: "BBC News",        url: "https://feeds.bbci.co.uk/news/rss.xml",                              enabled: true },
-        { id: "nyt",  name: "New York Times",   url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",          enabled: true },
-        { id: "palo", name: "Prothom Alo",      url: "https://www.prothomalo.com/feed/",                                   enabled: true },
-        { id: "star", name: "The Daily Star",   url: "https://www.thedailystar.net/frontpage/rss.xml",                    enabled: true }
-    ];
+// Google-bot style headers for sites that block datacenter IPs but allow crawlers.
+// Proxies forward headers we set in the URL or can't set (CORS-only), but
+// we can influence Accept / Accept-Language which some WAFs check.
+const BROWSER_HEADERS = {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5"
+};
 
-    let state = {
-        feeds: [], currentView: "home", activeArticleUrl: "",
-        optionsOpen: false,
-        settings: { theme: "theme-light", font: "font-sans", size: "size-medium" }
-    };
+// Known-blocked domains that need archive.ph fallback first
+const ARCHIVE_FIRST_DOMAINS = ["prothomalo.com"];
 
-    let prefetchQueue = [];
-    let isPrefetching  = false;
+const defaultFeeds = [
+    { id:"bbc",  name:"BBC News",       url:"https://feeds.bbci.co.uk/news/rss.xml",                     enabled:true },
+    { id:"nyt",  name:"New York Times", url:"https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", enabled:true },
+    { id:"palo", name:"Prothom Alo",    url:"https://www.prothomalo.com/feed/",                          enabled:true },
+    { id:"star", name:"The Daily Star", url:"https://www.thedailystar.net/frontpage/rss.xml",            enabled:true }
+];
 
-    window.addEventListener('DOMContentLoaded', () => {
-        cleanupCache();
-        loadSavedData();
-        setupKeyBindings();
-        loadMixedFeed();
-    });
+let state = {
+    feeds:[], currentView:"home", activeArticleUrl:"",
+    optionsOpen:false,
+    settings:{ theme:"theme-light", font:"font-sans", size:"size-medium" }
+};
+let prefetchQueue = [], isPrefetching = false;
 
-    // ── CACHE ────────────────────────────────────────────────────────────────
-    function safeSetItem(key, value) {
-        try { localStorage.setItem(key, value); }
-        catch (e) {
-            if (e.name === 'QuotaExceededError') {
-                cleanupCache(true);
-                try { localStorage.setItem(key, value); } catch (_) {}
-            }
+window.addEventListener('DOMContentLoaded', () => {
+    cleanupCache();
+    loadSavedData();
+    setupKeyBindings();
+    loadMixedFeed();
+});
+
+// ── CACHE ─────────────────────────────────────────────────────────────────────
+function safeSetItem(key, val) {
+    try { localStorage.setItem(key, val); }
+    catch(e) {
+        if (e.name === 'QuotaExceededError') {
+            cleanupCache(true);
+            try { localStorage.setItem(key, val); } catch(_) {}
         }
     }
-
-    function cleanupCache(aggressive = false) {
-        const now = Date.now();
-        const remove = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && key.startsWith(CACHE_PREFIX)) {
-                try {
-                    const item  = JSON.parse(localStorage.getItem(key));
-                    const limit = aggressive ? 86400000 : THREE_DAYS_MS;
-                    if (now - item.timestamp > limit) remove.push(key);
-                } catch(_) { remove.push(key); }
-            }
-        }
-        remove.forEach(k => localStorage.removeItem(k));
-    }
-
-    function loadSavedData() {
-        const sf = localStorage.getItem('rss_feeds_cfg');
-        const ss = localStorage.getItem('rss_settings');
-        state.feeds = sf ? JSON.parse(sf) : JSON.parse(JSON.stringify(defaultFeeds));
-        if (ss) state.settings = { ...state.settings, ...JSON.parse(ss) };
-        applySettingsToDOM();
-    }
-
-    // ── NETWORK ──────────────────────────────────────────────────────────────
-    async function fetchWithFallback(targetUrl) {
-        for (const proxy of proxyList) {
+}
+function cleanupCache(aggressive=false) {
+    const now=Date.now(), remove=[];
+    for (let i=0;i<localStorage.length;i++) {
+        const k=localStorage.key(i);
+        if (k && k.startsWith(CACHE_PREFIX)) {
             try {
-                const res = await fetch(proxy + encodeURIComponent(targetUrl));
-                if (res.ok) return await res.text();
-            } catch (_) {}
-        }
-        throw new Error("Network block.");
-    }
-
-    // ── OPTIONS OVERLAY (LSK) ────────────────────────────────────────────────
-    // Per Cloud Phone docs: LSK = Escape key; opens a full-screen options popup.
-    function openOptions() {
-        state.optionsOpen = true;
-        document.getElementById('options-overlay').classList.add('active');
-        document.getElementById('lsk-label').innerText = 'Select';
-        document.getElementById('rsk-label').innerText = 'Close';
-        // Focus first item
-        setTimeout(() => {
-            const first = document.querySelector('#options-overlay .clickable-item');
-            if (first) first.focus();
-        }, 10);
-    }
-
-    function closeOptions() {
-        state.optionsOpen = false;
-        document.getElementById('options-overlay').classList.remove('active');
-        updateSoftkeyLabels();
-        // Restore focus to current view
-        setTimeout(() => {
-            const activeView = document.getElementById('view-' + state.currentView);
-            const first = activeView && activeView.querySelector('.clickable-item, input, select');
-            if (first) first.focus();
-        }, 10);
-    }
-
-    // ── VIEWS ────────────────────────────────────────────────────────────────
-    function switchView(viewName) {
-        if (state.optionsOpen) closeOptions();
-        state.currentView = viewName;
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById('view-' + viewName).classList.add('active');
-
-        if (viewName === 'settings')  renderSettingsFeedToggles();
-        if (viewName === 'channels')  renderChannelsList();
-
-        updateSoftkeyLabels();
-
-        setTimeout(() => {
-            const activeView = document.getElementById('view-' + viewName);
-            const first = activeView && activeView.querySelector('.clickable-item, input, select');
-            if (first) { first.focus(); first.scrollIntoView({ block: 'nearest' }); }
-        }, 10);
-    }
-
-    function updateSoftkeyLabels() {
-        if (state.optionsOpen) return; // labels already set in openOptions()
-        const map = {
-            home:      ['Options', 'OPEN',     'Exit'],
-            channels:  ['Options', 'OPEN',     'Back'],
-            headlines: ['Options', 'OPEN',     'Back'],
-            reader:    ['Back',    'EXTERNAL', ''],
-            settings:  ['Save',    'EDIT',     'Back']
-        };
-        const labels = map[state.currentView] || ['Options', 'SELECT', 'Back'];
-        document.getElementById('lsk-label').innerText = labels[0];
-        document.getElementById('csk-label').innerText = labels[1];
-        document.getElementById('rsk-label').innerText = labels[2];
-    }
-
-    // ── CHANNELS ─────────────────────────────────────────────────────────────
-    function renderChannelsList() {
-        const container = document.getElementById('channels-list');
-        container.innerHTML = '';
-        if (!state.feeds.length) {
-            container.innerHTML = "<div class='empty-state'>No channels configured.</div>";
-            return;
-        }
-        state.feeds.forEach(feed => {
-            const btn = document.createElement('button');
-            btn.className = 'clickable-item';
-            btn.innerHTML = `<div style="flex:1;font-weight:600;">${feed.name}</div><div style="font-size:10px;color:var(--text-muted);">${feed.enabled !== false ? 'ON' : 'OFF'}</div>`;
-            btn.onclick = () => openChannelHeadlines(feed);
-            container.appendChild(btn);
-        });
-    }
-
-    function openChannelHeadlines(feed) {
-        const container = document.getElementById('headlines-list');
-        const cached    = JSON.parse(localStorage.getItem('rss_feed_cache') || '[]');
-        const articles  = cached.filter(a => a.source === feed.name);
-        if (articles.length) {
-            renderArticles(articles, container, true);
-        } else {
-            container.innerHTML = "<div class='empty-state'>No cached articles. Force Refresh from options.</div>";
-        }
-        switchView('headlines');
-    }
-
-    // ── FEED LOADING ─────────────────────────────────────────────────────────
-    function forceRefresh() {
-        localStorage.removeItem('rss_feed_cache');
-        loadMixedFeed();
-    }
-
-    async function loadMixedFeed() {
-        switchView('home');
-        const container  = document.getElementById('home-list');
-        const syncStatus = document.getElementById('sync-status');
-
-        let cachedFeeds = JSON.parse(localStorage.getItem('rss_feed_cache') || '[]');
-        cachedFeeds = cachedFeeds.filter(a => Date.now() - a.timestamp < THREE_DAYS_MS);
-
-        if (cachedFeeds.length) {
-            renderArticles(cachedFeeds, container, false);
-            syncStatus.style.display = 'block';
-        } else {
-            container.innerHTML = "<div class='empty-state'>Syncing latest news...</div>";
-        }
-
-        const enabled = state.feeds.filter(f => f.enabled !== false);
-        if (!enabled.length) {
-            container.innerHTML = "<div class='empty-state'>All feeds disabled. Go to Settings.</div>";
-            syncStatus.style.display = 'none';
-            return;
-        }
-
-        let newArticles = [];
-        await Promise.allSettled(enabled.map(async feed => {
-            try {
-                const res  = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`);
-                const data = await res.json();
-                if (data.status === 'ok') {
-                    data.items.forEach(item => {
-                        newArticles.push({
-                            title: item.title, link: item.link, source: feed.name,
-                            desc: (item.description || '').replace(/<\/?[^>]+(>|$)/g, '').trim(),
-                            timestamp: new Date(item.pubDate).getTime(),
-                            thumbnail: item.thumbnail || (item.enclosure && item.enclosure.link) || null
-                        });
-                    });
-                    return;
-                }
-            } catch(_) {}
-            try {
-                const text = await fetchWithFallback(feed.url);
-                const doc  = new DOMParser().parseFromString(text, 'text/xml');
-                doc.querySelectorAll('item, entry').forEach(item => {
-                    const title    = item.querySelector('title')?.textContent || 'Untitled';
-                    const linkNode = item.querySelector('link');
-                    const link     = linkNode ? (linkNode.textContent || linkNode.getAttribute('href')) : '';
-                    const dateText = item.querySelector('pubDate, updated, published')?.textContent;
-                    const thumb    = item.querySelector('thumbnail, content, image')?.getAttribute('url') || null;
-                    newArticles.push({
-                        title, link, source: feed.name, thumbnail: thumb,
-                        desc: (item.querySelector('description, summary')?.textContent || '').replace(/<\/?[^>]+(>|$)/g, '').trim(),
-                        timestamp: dateText ? new Date(dateText).getTime() : Date.now()
-                    });
-                });
-            } catch(_) {}
-        }));
-
-        syncStatus.style.display = 'none';
-
-        if (newArticles.length) {
-            const merged = [...newArticles, ...cachedFeeds];
-            const unique = Array.from(new Map(merged.map(i => [i.link, i])).values());
-            unique.sort((a, b) => b.timestamp - a.timestamp);
-            const final = unique.slice(0, 60);
-            safeSetItem('rss_feed_cache', JSON.stringify(final));
-            if (state.currentView === 'home') renderArticles(final, container, false);
-            startPrefetching(final.slice(0, 15));
-        } else if (!cachedFeeds.length) {
-            container.innerHTML = "<div class='empty-state' style='color:#e33;'>Offline or Feeds blocked.</div>";
+                const item=JSON.parse(localStorage.getItem(k));
+                if (now-item.timestamp > (aggressive?86400000:THREE_DAYS_MS)) remove.push(k);
+            } catch(_) { remove.push(k); }
         }
     }
+    remove.forEach(k=>localStorage.removeItem(k));
+}
+function loadSavedData() {
+    const sf=localStorage.getItem('rss_feeds_cfg');
+    const ss=localStorage.getItem('rss_settings');
+    state.feeds = sf ? JSON.parse(sf) : JSON.parse(JSON.stringify(defaultFeeds));
+    if (ss) state.settings={...state.settings,...JSON.parse(ss)};
+    applySettingsToDOM();
+}
 
-    // ── ARTICLE CARDS ─────────────────────────────────────────────────────────
-    function renderArticles(articles, container, hideSource = false) {
-        container.innerHTML = '';
-        articles.forEach(article => {
-            const timeStr  = formatTimeAgo(article.timestamp);
-            const metaText = hideSource ? timeStr : (timeStr ? `${article.source} • ${timeStr}` : article.source);
-            const thumbHtml = article.thumbnail
-                ? `<img src="${article.thumbnail}" class="news-thumbnail" loading="lazy">`
-                : `<div class="news-thumbnail" style="display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(128,128,128,0.5);">TXT</div>`;
-            const isLoaded = !!localStorage.getItem(CACHE_PREFIX + article.link);
-            const tickHtml = `<span class="cache-tick" data-url="${encodeURIComponent(article.link)}" style="opacity:0.6;font-weight:bold;margin-left:4px;display:${isLoaded ? 'inline' : 'none'};">✓</span>`;
-            const card = document.createElement('button');
-            card.className = 'clickable-item';
-            card.innerHTML = `<div class="news-card-content"><div class="news-card-text"><div class="news-title">${article.title}</div><div class="news-meta">${metaText}${tickHtml}</div></div>${thumbHtml}</div>`;
-            card.onclick = () => loadFullArticle(article.link, article.title, metaText, article.desc);
-            container.appendChild(card);
-        });
-    }
+// ── NETWORK WITH BYPASS STRATEGIES ───────────────────────────────────────────
+function isBlockedDomain(url) {
+    try {
+        const host = new URL(url).hostname;
+        return ARCHIVE_FIRST_DOMAINS.some(d => host.includes(d));
+    } catch(_) { return false; }
+}
 
-    // ── PREFETCH ──────────────────────────────────────────────────────────────
-    function startPrefetching(articles) {
-        const urls = articles.filter(a => a.link && !localStorage.getItem(CACHE_PREFIX + a.link)).map(a => a.link);
-        prefetchQueue = [...new Set([...prefetchQueue, ...urls])];
-        if (!isPrefetching) processPrefetchQueue();
-    }
-
-    async function processPrefetchQueue() {
-        if (!prefetchQueue.length) { isPrefetching = false; return; }
-        isPrefetching = true;
-        const url = prefetchQueue.shift();
-        if (!localStorage.getItem(CACHE_PREFIX + url)) {
-            try {
-                let html = await extractArticleHtml(url);
-                let isFb = false;
-                if (!html || html.length < 200) {
-                    const cached = JSON.parse(localStorage.getItem('rss_feed_cache') || '[]');
-                    const match  = cached.find(a => a.link === url);
-                    html = `<p><em>Extraction limited. Summary:</em></p><blockquote style="border-left:2px solid var(--border);padding-left:8px;color:var(--text-muted);">${match ? match.desc : 'No details.'}</blockquote>`;
-                    isFb = true;
-                }
-                safeSetItem(CACHE_PREFIX + url, JSON.stringify({ content: html, timestamp: Date.now(), isFallback: isFb }));
-                document.querySelectorAll(`.cache-tick[data-url="${encodeURIComponent(url)}"]`).forEach(t => t.style.display = 'inline');
-            } catch(_) {}
-        }
-        setTimeout(processPrefetchQueue, 1500);
-    }
-
-    async function extractArticleHtml(url) {
+// Try archive.ph for a cached copy (strips JS paywalls / bot walls)
+async function tryArchive(url) {
+    // archive.ph/newest/<url> redirects to the latest snapshot
+    const archiveUrl = "https://archive.ph/newest/" + encodeURIComponent(url);
+    for (const proxy of PROXY_LIST) {
         try {
-            const htmlText = await fetchWithFallback(url);
-            const doc      = new DOMParser().parseFromString(htmlText, 'text/html');
-            const root     = doc.querySelector('article, main, .article-body, .story-body, [itemprop="articleBody"]') || doc.body;
-            let parsed     = '';
-            root.querySelectorAll('p, h2, h3, img').forEach(n => {
+            const res = await proxy(archiveUrl);
+            if (res.ok) {
+                const text = await res.text();
+                // archive.ph returns the snapshot page wrapping the original;
+                // the actual article is inside #CONTENT or the main iframe src
+                if (text.length > 500) return { text, source:"archive" };
+            }
+        } catch(_) {}
+    }
+    return null;
+}
+
+// Standard proxy fetch with referer spoofing via URL tricks
+async function fetchViaProxy(url) {
+    for (const proxy of PROXY_LIST) {
+        try {
+            const res = await proxy(url);
+            if (res.ok) {
+                const text = await res.text();
+                if (text.length > 200) return text;
+            }
+        } catch(_) {}
+    }
+    return null;
+}
+
+async function fetchWithFallback(targetUrl) {
+    // For known-blocked domains, try archive first then fall through
+    if (isBlockedDomain(targetUrl)) {
+        const archived = await tryArchive(targetUrl);
+        if (archived) return archived.text;
+    }
+    const text = await fetchViaProxy(targetUrl);
+    if (text) return text;
+    throw new Error("All proxies failed.");
+}
+
+// ── ARTICLE EXTRACTION ────────────────────────────────────────────────────────
+// Returns { html, sourceBadge }
+async function extractArticle(url, rssSummary="") {
+    // Strategy 1: Direct proxy fetch → parse article selectors
+    try {
+        let rawHtml = null;
+        let sourceLabel = "live";
+
+        if (isBlockedDomain(url)) {
+            // Try archive.ph first for blocked domains
+            const archived = await tryArchive(url);
+            if (archived) {
+                rawHtml = archived.text;
+                sourceLabel = "archive";
+            }
+        }
+
+        if (!rawHtml) {
+            rawHtml = await fetchViaProxy(url);
+            sourceLabel = "live";
+        }
+
+        if (rawHtml && rawHtml.length > 300) {
+            const doc  = new DOMParser().parseFromString(rawHtml, "text/html");
+            // Broad selector list covering Prothom Alo, Daily Star, BBC, NYT
+            const root = doc.querySelector([
+                'article',
+                '[class*="article-body"]',
+                '[class*="story-body"]',
+                '[class*="ArticleBody"]',
+                '[class*="article__body"]',
+                '[class*="content-body"]',
+                '[class*="entry-content"]',
+                '[itemprop="articleBody"]',
+                'main'
+            ].join(',')) || doc.body;
+
+            let parsed = "";
+            root.querySelectorAll('p, h2, h3, h4, img, blockquote').forEach(n => {
                 if (n.tagName === 'IMG') {
-                    let src = n.getAttribute('src') || n.getAttribute('data-src');
-                    if (src && !src.startsWith('data:') && !src.includes('.svg')) {
-                        if (src.startsWith('/')) { try { src = new URL(src, url).href; } catch(_){} }
-                        parsed += `<img src="${src}" loading="lazy" />`;
+                    let src = n.getAttribute('src') || n.getAttribute('data-src') || n.getAttribute('data-lazy-src');
+                    if (src && !src.startsWith('data:') && !src.includes('.svg') && src.length > 10) {
+                        try { if (src.startsWith('/')) src = new URL(src, url).href; } catch(_) {}
+                        parsed += `<img src="${src}" loading="lazy">`;
                     }
-                } else if (n.textContent.trim().length > 25) {
-                    parsed += `<${n.tagName.toLowerCase()}>${n.innerHTML}</${n.tagName.toLowerCase()}>`;
+                } else {
+                    const txt = n.textContent.trim();
+                    if (txt.length > 30) {
+                        const tag = n.tagName.toLowerCase();
+                        parsed += `<${tag}>${n.innerHTML}</${tag}>`;
+                    }
                 }
             });
-            parsed = parsed.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-            parsed = parsed.replace(/style="[^"]*"/gi, '').replace(/class="[^"]*"/gi, '');
-            return parsed;
-        } catch(_) { return ''; }
+
+            // Strip scripts and inline styles/classes
+            parsed = parsed
+                .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+                .replace(/\s*style="[^"]*"/gi, "")
+                .replace(/\s*class="[^"]*"/gi, "");
+
+            if (parsed.length > 200) return { html: parsed, source: sourceLabel };
+        }
+    } catch(_) {}
+
+    // Strategy 2: NYT / paywalled — RSS description is often the full lede
+    if (rssSummary && rssSummary.length > 80) {
+        return {
+            html: `<p>${rssSummary}</p><p style="font-style:italic;font-size:0.9em;color:var(--text-muted);">Full article may require subscription. Tap EXTERNAL to open in browser.</p>`,
+            source: "rss"
+        };
     }
 
-    async function loadFullArticle(url, title, meta, fallbackDesc = '') {
-        state.activeArticleUrl = url;
-        switchView('reader');
-        document.getElementById('reader-title').innerText = title;
-        document.getElementById('reader-meta').innerText  = meta || 'Article View';
-        const content = document.getElementById('reader-content');
-        const cached  = localStorage.getItem(CACHE_PREFIX + url);
-        if (cached) { content.innerHTML = JSON.parse(cached).content; return; }
-        content.innerHTML = "<div class='empty-state'>Downloading text & images...</div>";
+    // Strategy 3: Total failure
+    return { html: `<p style="color:var(--text-muted);font-style:italic;">Could not load article. Tap EXTERNAL to open in browser.</p>`, source: "fail" };
+}
+
+// ── VIEWS ─────────────────────────────────────────────────────────────────────
+function switchView(viewName) {
+    if (state.optionsOpen) closeOptions();
+    state.currentView = viewName;
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+viewName).classList.add('active');
+    if (viewName==='settings') renderSettingsFeedToggles();
+    if (viewName==='channels') renderChannelsList();
+    updateSoftkeyLabels();
+    setTimeout(()=>{
+        const av=document.getElementById('view-'+viewName);
+        const f=av&&av.querySelector('.clickable-item,input,select');
+        if (f){f.focus();f.scrollIntoView({block:'nearest'});}
+    },10);
+}
+
+function updateSoftkeyLabels() {
+    if (state.optionsOpen) return;
+    const map={
+        home:     ['Options','OPEN','Exit'],
+        channels: ['Options','OPEN','Back'],
+        headlines:['Options','OPEN','Back'],
+        reader:   ['Back','EXTERNAL',''],
+        settings: ['Save','EDIT','Back']
+    };
+    const l=map[state.currentView]||['Options','SELECT','Back'];
+    document.getElementById('lsk-label').innerText=l[0];
+    document.getElementById('csk-label').innerText=l[1];
+    document.getElementById('rsk-label').innerText=l[2];
+}
+
+// ── OPTIONS OVERLAY (LSK = Escape) ────────────────────────────────────────────
+function openOptions() {
+    state.optionsOpen=true;
+    document.getElementById('options-overlay').classList.add('active');
+    document.getElementById('lsk-label').innerText='Select';
+    document.getElementById('rsk-label').innerText='Close';
+    setTimeout(()=>{
+        const f=document.querySelector('#options-overlay .clickable-item');
+        if(f)f.focus();
+    },10);
+}
+function closeOptions() {
+    state.optionsOpen=false;
+    document.getElementById('options-overlay').classList.remove('active');
+    updateSoftkeyLabels();
+    setTimeout(()=>{
+        const av=document.getElementById('view-'+state.currentView);
+        const f=av&&av.querySelector('.clickable-item,input,select');
+        if(f)f.focus();
+    },10);
+}
+
+// ── CHANNELS ──────────────────────────────────────────────────────────────────
+function renderChannelsList() {
+    const c=document.getElementById('channels-list');
+    c.innerHTML='';
+    if (!state.feeds.length){c.innerHTML="<div class='empty-state'>No channels.</div>";return;}
+    state.feeds.forEach(feed=>{
+        const btn=document.createElement('button');
+        btn.className='clickable-item';
+        btn.innerHTML=`<div style="flex:1;font-weight:600;">${feed.name}</div><div style="font-size:10px;color:var(--text-muted);">${feed.enabled!==false?'ON':'OFF'}</div>`;
+        btn.onclick=()=>openChannelHeadlines(feed);
+        c.appendChild(btn);
+    });
+}
+function openChannelHeadlines(feed) {
+    const c=document.getElementById('headlines-list');
+    const cached=JSON.parse(localStorage.getItem('rss_feed_cache')||'[]');
+    const arts=cached.filter(a=>a.source===feed.name);
+    if (arts.length) renderArticles(arts,c,true);
+    else c.innerHTML="<div class='empty-state'>No cached articles. Force Refresh from options.</div>";
+    switchView('headlines');
+}
+
+// ── FEED LOADING ──────────────────────────────────────────────────────────────
+function forceRefresh(){localStorage.removeItem('rss_feed_cache');loadMixedFeed();}
+
+async function loadMixedFeed() {
+    switchView('home');
+    const container=document.getElementById('home-list');
+    const syncStatus=document.getElementById('sync-status');
+
+    let cachedFeeds=JSON.parse(localStorage.getItem('rss_feed_cache')||'[]');
+    cachedFeeds=cachedFeeds.filter(a=>Date.now()-a.timestamp<THREE_DAYS_MS);
+
+    if (cachedFeeds.length){renderArticles(cachedFeeds,container,false);syncStatus.style.display='block';}
+    else container.innerHTML="<div class='empty-state'>Syncing latest news...</div>";
+
+    const enabled=state.feeds.filter(f=>f.enabled!==false);
+    if(!enabled.length){container.innerHTML="<div class='empty-state'>All feeds disabled.</div>";syncStatus.style.display='none';return;}
+
+    let newArticles=[];
+    await Promise.allSettled(enabled.map(async feed=>{
+        // Attempt 1: rss2json API (good for standard feeds)
         try {
-            let html = await extractArticleHtml(url);
-            let isFb = false;
-            if (!html || html.length < 200) {
-                html = `<p><em>Extraction limited. Summary:</em></p><blockquote style="border-left:2px solid var(--border);padding-left:8px;color:var(--text-muted);">${fallbackDesc || 'No details.'}</blockquote>`;
-                isFb = true;
-            }
-            content.innerHTML = html;
-            safeSetItem(CACHE_PREFIX + url, JSON.stringify({ content: html, timestamp: Date.now(), isFallback: isFb }));
-            document.querySelectorAll(`.cache-tick[data-url="${encodeURIComponent(url)}"]`).forEach(t => t.style.display = 'inline');
-        } catch(_) {
-            content.innerHTML = `<p><em>Offline. Summary:</em></p><blockquote style="border-left:2px solid var(--border);padding-left:8px;color:var(--text-muted);">${fallbackDesc || 'No details.'}</blockquote>`;
-        }
-    }
-
-    // ── SETTINGS ──────────────────────────────────────────────────────────────
-    function applySettings() {
-        state.settings.theme = document.getElementById('setting-theme').value;
-        state.settings.size  = document.getElementById('setting-size').value;
-        state.settings.font  = document.getElementById('setting-font').value;
-        localStorage.setItem('rss_settings', JSON.stringify(state.settings));
-        applySettingsToDOM();
-    }
-
-    function applySettingsToDOM() {
-        document.getElementById('setting-theme').value = state.settings.theme;
-        document.getElementById('setting-size').value  = state.settings.size;
-        document.getElementById('setting-font').value  = state.settings.font;
-        document.body.className = `${state.settings.theme} ${state.settings.font} ${state.settings.size}`;
-    }
-
-    function renderSettingsFeedToggles() {
-        const container = document.getElementById('settings-feed-toggles');
-        container.innerHTML = '';
-        state.feeds.forEach((feed, i) => {
-            const btn = document.createElement('button');
-            btn.className = 'clickable-item';
-            btn.innerHTML = `<div style="flex:1;">${feed.name}</div><div style="font-size:10px;font-weight:bold;">${feed.enabled !== false ? '[ON]' : '[OFF]'}</div>`;
-            btn.onclick = () => {
-                state.feeds[i].enabled = !(feed.enabled !== false);
-                localStorage.setItem('rss_feeds_cfg', JSON.stringify(state.feeds));
-                renderSettingsFeedToggles();
-                forceRefresh();
-            };
-            container.appendChild(btn);
-        });
-    }
-
-    function resetApp() {
-        if (confirm('Factory reset? All saved feeds and cache will be deleted.')) {
-            localStorage.clear();
-            window.location.reload();
-        }
-    }
-
-    function formatTimeAgo(timestamp) {
-        if (!timestamp) return '';
-        const s = Math.floor((Date.now() - timestamp) / 1000);
-        let i = s / 3600;
-        if (i >= 1 && i < 24) return Math.floor(i) + 'h ago';
-        i = s / 60;
-        if (i >= 1 && i < 60) return Math.floor(i) + 'm ago';
-        if (s < 60) return 'Just now';
-        return new Date(timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-    }
-
-    // ── D-PAD FOCUS MOVEMENT ──────────────────────────────────────────────────
-    function moveFocus(direction) {
-        // If options overlay is open, navigate within it
-        const root = state.optionsOpen
-            ? document.getElementById('options-overlay')
-            : document.querySelector('.view.active');
-        if (!root) return;
-        const focusables = Array.from(root.querySelectorAll('.clickable-item, input, select'))
-                               .filter(el => el.offsetParent !== null);
-        if (!focusables.length) return;
-        let idx = focusables.indexOf(document.activeElement);
-        if (direction === 1)  idx = Math.min(idx + 1, focusables.length - 1);
-        if (direction === -1) idx = Math.max(idx - 1, 0);
-        if (idx < 0) idx = 0;
-        focusables[idx].focus();
-        focusables[idx].scrollIntoView({ block: 'nearest' });
-    }
-
-    // ── KEY BINDINGS ──────────────────────────────────────────────────────────
-    // Per Cloud Phone docs:
-    //   LSK  → Escape key (programmable)
-    //   RSK  → history.back() / 'back' event (programmable)
-    //   Enter/Center → click / confirm
-    //   ArrowUp/Down → list navigation
-    function setupKeyBindings() {
-
-        window.addEventListener('keydown', e => {
-
-            // ── LSK = Escape ──────────────────────────────────────────────────
-            if (e.key === 'Escape') {
-                e.preventDefault();
-
-                if (state.optionsOpen) {
-                    // Escape closes the options menu
-                    closeOptions();
-                    return;
-                }
-
-                // In reader, LSK/Escape acts as Back
-                if (state.currentView === 'reader') {
-                    switchView('home');
-                    return;
-                }
-
-                // In settings, Escape saves and goes home
-                if (state.currentView === 'settings') {
-                    applySettings();
-                    switchView('home');
-                    return;
-                }
-
-                // On any other view, Escape opens the options overlay
-                openOptions();
+            const res=await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`);
+            const data=await res.json();
+            if(data.status==='ok'){
+                data.items.forEach(item=>{
+                    newArticles.push({
+                        title:item.title, link:item.link, source:feed.name,
+                        desc:(item.description||item.content||'').replace(/<\/?[^>]+(>|$)/g,'').replace(/\s+/g,' ').trim().slice(0,400),
+                        timestamp:new Date(item.pubDate).getTime(),
+                        thumbnail:item.thumbnail||(item.enclosure&&item.enclosure.link)||null
+                    });
+                });
                 return;
             }
+        } catch(_) {}
 
-            // ── Enter / center D-pad ──────────────────────────────────────────
-            if (e.key === 'Enter') {
-                if (state.currentView === 'reader') {
-                    e.preventDefault();
-                    window.open(state.activeArticleUrl, '_blank');
-                    return;
-                }
-                if (document.activeElement && typeof document.activeElement.click === 'function') {
-                    e.preventDefault();
-                    document.activeElement.click();
-                }
-                return;
-            }
+        // Attempt 2: direct proxy XML parse
+        try {
+            const text=await fetchViaProxy(feed.url);
+            if(!text) return;
+            const doc=new DOMParser().parseFromString(text,'text/xml');
+            doc.querySelectorAll('item, entry').forEach(item=>{
+                const title=item.querySelector('title')?.textContent||'Untitled';
+                const linkNode=item.querySelector('link');
+                const link=linkNode?(linkNode.textContent||linkNode.getAttribute('href')):'';
+                const dateText=item.querySelector('pubDate,updated,published')?.textContent;
+                const thumb=item.querySelector('thumbnail,content,image')?.getAttribute('url')||null;
+                const descRaw=(item.querySelector('description,summary,content\\:encoded')?.textContent||'');
+                newArticles.push({
+                    title, link, source:feed.name, thumbnail:thumb,
+                    desc:descRaw.replace(/<\/?[^>]+(>|$)/g,'').replace(/\s+/g,' ').trim().slice(0,400),
+                    timestamp:dateText?new Date(dateText).getTime():Date.now()
+                });
+            });
+        } catch(_) {}
+    }));
 
-            // ── ArrowUp / ArrowDown (also numpad 2 / 8) ───────────────────────
-            const isDown = e.key === 'ArrowDown' || e.key === '8';
-            const isUp   = e.key === 'ArrowUp'   || e.key === '2';
+    syncStatus.style.display='none';
 
-            if (isDown || isUp) {
-                if (!state.optionsOpen && state.currentView === 'reader') {
-                    document.getElementById('view-reader').scrollTop += isDown ? 80 : -80;
-                } else {
-                    moveFocus(isDown ? 1 : -1);
-                }
-                e.preventDefault();
-                return;
-            }
+    if(newArticles.length){
+        const merged=[...newArticles,...cachedFeeds];
+        const unique=Array.from(new Map(merged.map(i=>[i.link,i])).values());
+        unique.sort((a,b)=>b.timestamp-a.timestamp);
+        const final=unique.slice(0,60);
+        safeSetItem('rss_feed_cache',JSON.stringify(final));
+        if(state.currentView==='home') renderArticles(final,container,false);
+        startPrefetching(final.slice(0,15));
+    } else if(!cachedFeeds.length){
+        container.innerHTML="<div class='empty-state' style='color:#e33;'>Offline or blocked.</div>";
+    }
+}
 
-            // ── Numeric shortcuts (home view only, options not open) ──────────
-            if (!state.optionsOpen && state.currentView === 'home') {
-                if (e.key === '1') { e.preventDefault(); forceRefresh(); }
-                if (e.key === '2') { e.preventDefault(); switchView('channels'); }
-                if (e.key === '3') { e.preventDefault(); switchView('settings'); }
-            }
-        });
+// ── ARTICLE CARDS ──────────────────────────────────────────────────────────────
+function renderArticles(articles,container,hideSource=false){
+    container.innerHTML='';
+    articles.forEach(article=>{
+        const timeStr=formatTimeAgo(article.timestamp);
+        const meta=hideSource?timeStr:(timeStr?`${article.source} • ${timeStr}`:article.source);
+        const thumbHtml=article.thumbnail
+            ?`<img src="${article.thumbnail}" class="news-thumbnail" loading="lazy">`
+            :`<div class="news-thumbnail" style="display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(128,128,128,0.5);">TXT</div>`;
+        const isLoaded=!!localStorage.getItem(CACHE_PREFIX+article.link);
+        const tick=`<span class="cache-tick" data-url="${encodeURIComponent(article.link)}" style="opacity:.6;font-weight:bold;margin-left:4px;display:${isLoaded?'inline':'none'};">✓</span>`;
+        const card=document.createElement('button');
+        card.className='clickable-item';
+        card.innerHTML=`<div class="news-card-content"><div class="news-card-text"><div class="news-title">${article.title}</div><div class="news-meta">${meta}${tick}</div></div>${thumbHtml}</div>`;
+        card.onclick=()=>loadFullArticle(article.link,article.title,meta,article.desc);
+        container.appendChild(card);
+    });
+}
 
-        // ── RSK = history.back() / 'back' event ──────────────────────────────
-        // The 'back' event fires when the hardware RSK is pressed.
-        // We intercept it to handle in-app navigation ourselves.
-        window.addEventListener('back', e => {
+// ── PREFETCH ──────────────────────────────────────────────────────────────────
+function startPrefetching(articles){
+    const urls=articles.filter(a=>a.link&&!localStorage.getItem(CACHE_PREFIX+a.link)).map(a=>a.link);
+    prefetchQueue=[...new Set([...prefetchQueue,...urls])];
+    if(!isPrefetching) processPrefetchQueue();
+}
+async function processPrefetchQueue(){
+    if(!prefetchQueue.length){isPrefetching=false;return;}
+    isPrefetching=true;
+    const url=prefetchQueue.shift();
+    if(!localStorage.getItem(CACHE_PREFIX+url)){
+        const cached=JSON.parse(localStorage.getItem('rss_feed_cache')||'[]');
+        const match=cached.find(a=>a.link===url);
+        try {
+            const {html,source}=await extractArticle(url,match?match.desc:'');
+            safeSetItem(CACHE_PREFIX+url,JSON.stringify({content:html,source,timestamp:Date.now()}));
+            document.querySelectorAll(`.cache-tick[data-url="${encodeURIComponent(url)}"]`).forEach(t=>t.style.display='inline');
+        } catch(_) {}
+    }
+    setTimeout(processPrefetchQueue,2000);
+}
+
+async function loadFullArticle(url,title,meta,rssSummary=''){
+    state.activeArticleUrl=url;
+    switchView('reader');
+    document.getElementById('reader-title').innerText=title;
+    document.getElementById('reader-meta').innerText=meta||'Article View';
+    const content=document.getElementById('reader-content');
+
+    const cached=localStorage.getItem(CACHE_PREFIX+url);
+    if(cached){
+        const d=JSON.parse(cached);
+        content.innerHTML=d.content+sourceBadgeHtml(d.source);
+        return;
+    }
+
+    content.innerHTML="<div class='empty-state'>Loading article...</div>";
+    try {
+        const {html,source}=await extractArticle(url,rssSummary);
+        content.innerHTML=html+sourceBadgeHtml(source);
+        safeSetItem(CACHE_PREFIX+url,JSON.stringify({content:html,source,timestamp:Date.now()}));
+        document.querySelectorAll(`.cache-tick[data-url="${encodeURIComponent(url)}"]`).forEach(t=>t.style.display='inline');
+    } catch(_){
+        content.innerHTML=`<p style="color:var(--text-muted);">${rssSummary||'Failed to load.'}</p>`+sourceBadgeHtml('fail');
+    }
+}
+
+function sourceBadgeHtml(source){
+    const map={
+        live:   ['Live','src-live'],
+        archive:['Archive','src-archive'],
+        rss:    ['RSS Summary','src-rss'],
+        fail:   ['Failed','src-fail']
+    };
+    const [label,cls]=map[source]||['?','src-fail'];
+    return `<p style="margin-top:16px;"><span class="src-badge ${cls}">${label}</span></p>`;
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────────────────────
+function applySettings(){
+    state.settings.theme=document.getElementById('setting-theme').value;
+    state.settings.size=document.getElementById('setting-size').value;
+    state.settings.font=document.getElementById('setting-font').value;
+    localStorage.setItem('rss_settings',JSON.stringify(state.settings));
+    applySettingsToDOM();
+}
+function applySettingsToDOM(){
+    document.getElementById('setting-theme').value=state.settings.theme;
+    document.getElementById('setting-size').value=state.settings.size;
+    document.getElementById('setting-font').value=state.settings.font;
+    document.body.className=`${state.settings.theme} ${state.settings.font} ${state.settings.size}`;
+}
+function renderSettingsFeedToggles(){
+    const c=document.getElementById('settings-feed-toggles');
+    c.innerHTML='';
+    state.feeds.forEach((feed,i)=>{
+        const btn=document.createElement('button');
+        btn.className='clickable-item';
+        btn.innerHTML=`<div style="flex:1;">${feed.name}</div><div style="font-size:10px;font-weight:bold;">${feed.enabled!==false?'[ON]':'[OFF]'}</div>`;
+        btn.onclick=()=>{
+            state.feeds[i].enabled=!(feed.enabled!==false);
+            localStorage.setItem('rss_feeds_cfg',JSON.stringify(state.feeds));
+            renderSettingsFeedToggles();forceRefresh();
+        };
+        c.appendChild(btn);
+    });
+}
+function resetApp(){
+    if(confirm('Factory reset? All saved feeds and cache will be deleted.')){
+        localStorage.clear();window.location.reload();
+    }
+}
+function formatTimeAgo(ts){
+    if(!ts)return'';
+    const s=Math.floor((Date.now()-ts)/1000);
+    let i=s/3600;
+    if(i>=1&&i<24) return Math.floor(i)+'h ago';
+    i=s/60;
+    if(i>=1&&i<60) return Math.floor(i)+'m ago';
+    if(s<60) return'Just now';
+    return new Date(ts).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+}
+
+// ── D-PAD MOVEMENT ────────────────────────────────────────────────────────────
+function moveFocus(dir){
+    const root=state.optionsOpen
+        ?document.getElementById('options-overlay')
+        :document.querySelector('.view.active');
+    if(!root)return;
+    const els=Array.from(root.querySelectorAll('.clickable-item,input,select')).filter(e=>e.offsetParent!==null);
+    if(!els.length)return;
+    let idx=els.indexOf(document.activeElement);
+    idx=dir===1?Math.min(idx+1,els.length-1):Math.max(idx-1,0);
+    if(idx<0)idx=0;
+    els[idx].focus();els[idx].scrollIntoView({block:'nearest'});
+}
+
+// ── KEY BINDINGS ──────────────────────────────────────────────────────────────
+// Cloud Phone docs: LSK = Escape key | RSK = history.back() / 'back' event
+function setupKeyBindings(){
+    window.addEventListener('keydown', e=>{
+
+        // LSK = Escape
+        if(e.key==='Escape'){
             e.preventDefault();
+            if(state.optionsOpen){closeOptions();return;}
+            if(state.currentView==='reader'){switchView('home');return;}
+            if(state.currentView==='settings'){applySettings();switchView('home');return;}
+            openOptions();
+            return;
+        }
 
-            if (state.optionsOpen) {
-                closeOptions();
+        // Enter = select / confirm / open external
+        if(e.key==='Enter'){
+            if(state.currentView==='reader'){
+                e.preventDefault();
+                window.open(state.activeArticleUrl,'_blank');
                 return;
             }
-
-            switch (state.currentView) {
-                case 'home':
-                    window.close(); // Allow OS to exit
-                    break;
-                case 'reader':
-                    switchView('home');
-                    break;
-                case 'headlines':
-                    switchView('channels');
-                    break;
-                case 'settings':
-                case 'channels':
-                    switchView('home');
-                    break;
-                default:
-                    switchView('home');
+            if(document.activeElement&&typeof document.activeElement.click==='function'){
+                e.preventDefault();
+                document.activeElement.click();
             }
-        });
-    }
+            return;
+        }
+
+        // Arrow / numpad navigation
+        const isDown=e.key==='ArrowDown'||e.key==='8';
+        const isUp  =e.key==='ArrowUp'  ||e.key==='2';
+        if(isDown||isUp){
+            if(!state.optionsOpen&&state.currentView==='reader'){
+                document.getElementById('view-reader').scrollTop+=isDown?80:-80;
+            } else {
+                moveFocus(isDown?1:-1);
+            }
+            e.preventDefault();
+            return;
+        }
+
+        // Numeric shortcuts on home view
+        if(!state.optionsOpen&&state.currentView==='home'){
+            if(e.key==='1'){e.preventDefault();forceRefresh();}
+            if(e.key==='2'){e.preventDefault();switchView('channels');}
+            if(e.key==='3'){e.preventDefault();switchView('settings');}
+        }
+    });
+
+    // RSK = history.back() / 'back' event (Cloud Phone hardware key)
+    window.addEventListener('back', e=>{
+        e.preventDefault();
+        if(state.optionsOpen){closeOptions();return;}
+        switch(state.currentView){
+            case'home':     window.close();break;
+            case'reader':   switchView('home');break;
+            case'headlines':switchView('channels');break;
+            default:        switchView('home');
+        }
+    });
+}
 </script>
 </body>
 </html>
