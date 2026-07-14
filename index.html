@@ -3,76 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elegant RSS Reader</title>
+    <title>Cloud Phone RSS</title>
     <style>
-        /* Modern Editorial & Custom Variables */
+        /* Base Styling & Variables */
         :root {
-            --bg: #fdfdfd;
+            --bg: #fafafa;
             --surface: #ffffff;
-            --text-main: #1a1a1a;
-            --text-muted: #5a5a5a;
-            --accent-pill: #f0f0f0;
-            --accent-pill-text: #444444;
-            --focus-outline: #222222;
-            --focus-bg: #f5f5f5;
-            --border: #e5e5e5;
+            --text: #1a1a1a;
+            --text-muted: #6e6e73;
+            --accent: #1a1a1a;
+            --focus-outline: #007aff;
+            --focus-bg: #e5f1ff;
+            --border: #e5e5ea;
         }
 
-        /* Themes */
+        /* Theme Mapping */
         body.theme-light {
-            --bg: #fdfdfd; --surface: #ffffff; --text-main: #1a1a1a; --text-muted: #5a5a5a; --accent-pill: #f0f0f0; --accent-pill-text: #444444; --border: #e5e5e5; --focus-bg: #f5f5f5; --focus-outline: #222222;
+            --bg: #fafafa; --surface: #ffffff; --text: #1a1a1a; --text-muted: #6e6e73; --border: #e5e5ea;
         }
         body.theme-dark {
-            --bg: #121212; --surface: #1d1d1d; --text-main: #e5e5e5; --text-muted: #999999; --accent-pill: #2a2a2a; --accent-pill-text: #cccccc; --border: #2c2c2c; --focus-bg: #262626; --focus-outline: #ffffff;
+            --bg: #000000; --surface: #1c1c1e; --text: #f5f5f7; --text-muted: #98989d; --border: #38383a; --focus-bg: #2c2c2e; --focus-outline: #0a84ff;
         }
         body.theme-sepia {
-            --bg: #f5efe3; --surface: #fbf6ec; --text-main: #433422; --text-muted: #70604c; --accent-pill: #ebdcc5; --accent-pill-text: #5c4732; --border: #e6d7bf; --focus-bg: #ede2cf; --focus-outline: #433422;
-        }
-        body.theme-oled {
-            --bg: #000000; --surface: #000000; --text-main: #ffffff; --text-muted: #888888; --accent-pill: #222222; --accent-pill-text: #aaaaaa; --border: #1a1a1a; --focus-bg: #111111; --focus-outline: #ffffff;
+            --bg: #f4ecd8; --surface: #fdf6e3; --text: #433422; --text-muted: #8f7762; --border: #e4d9c4; --focus-bg: #eae0c4;
         }
 
-        /* Fonts */
-        body.font-sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body.font-serif { font-family: "Keeply Serif", Georgia, Cambria, "Times New Roman", serif; }
-        body.font-mono { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+        /* Typography Mapping */
+        body.font-sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body.font-serif { font-family: "Iowan Old Style", "Apple Garamond", Baskerville, "Times New Roman", serif; }
 
         body.size-small { font-size: 14px; }
-        body.size-medium { font-size: 17px; }
-        body.size-large { font-size: 21px; }
+        body.size-medium { font-size: 16px; }
+        body.size-large { font-size: 19px; }
 
+        /* Global Reset & Layout */
         body {
             margin: 0;
-            padding: 0 0 45px 0;
+            padding: 0 0 40px 0;
             background: var(--bg);
-            color: var(--text-main);
+            color: var(--text);
             box-sizing: border-box;
             line-height: 1.4;
         }
 
-        .view {
-            display: none;
-            padding: 12px;
-        }
-        .view.active {
-            display: block;
-        }
+        .view { display: none; padding: 12px; }
+        .view.active { display: block; }
 
-        h1 {
-            font-size: 1.35rem;
-            font-weight: 700;
-            margin: 5px 0 15px 0;
-            letter-spacing: -0.5px;
-        }
-        h2 {
-            font-size: 1.05rem;
+        h1, h2, h3 {
+            font-size: 1.2rem;
+            margin: 0 0 12px 0;
+            text-align: center;
             font-weight: 600;
-            margin: 20px 0 10px 0;
+        }
+        
+        .section-label {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin: 20px 0 8px 0;
             border-bottom: 1px solid var(--border);
-            padding-bottom: 5px;
+            padding-bottom: 4px;
         }
 
-        /* Interactive Elements & D-Pad focus configurations */
+        /* Interactive Elements & D-Pad Navigation */
         input, select, button, .clickable-item {
             font-size: inherit;
             font-family: inherit;
@@ -80,120 +74,95 @@
             background: var(--surface);
             border: 1px solid var(--border);
             padding: 10px;
-            border-radius: 0px; /* Minimalist clean edges */
+            border-radius: 6px;
             box-sizing: border-box;
             width: 100%;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-align: left;
             display: block;
             text-decoration: none;
-        }
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 10px;
-            margin-bottom: 6px;
-        }
-        .checkbox-container input {
-            width: auto;
-            margin: 0 10px 0 0;
-        }
-
-        input:focus, select:focus, button:focus, .clickable-item:focus, .checkbox-container:focus-within {
-            outline: 2px solid var(--focus-outline);
-            background-color: var(--focus-bg) !important;
-        }
-
-        /* Elegant Minimalist News Cards */
-        .news-card {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 12px 0;
-            margin-bottom: 0;
             cursor: pointer;
-            border-top: none; border-left: none; border-right: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
         }
-        .news-meta-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 6px;
-            font-size: 0.72rem;
+
+        button { text-align: center; font-weight: 600; }
+        
+        input:focus, select:focus, button:focus, .clickable-item:focus {
+            outline: 2px solid var(--focus-outline);
+            background-color: var(--focus-bg);
+            border-color: var(--focus-outline);
         }
-        .feed-badge {
-            background: var(--accent-pill);
-            color: var(--accent-pill-text);
-            padding: 2px 6px;
-            font-weight: 600;
-            margin-right: 8px;
-            letter-spacing: 0.3px;
+
+        /* Elegant News Cards */
+        .news-card {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            border-radius: 0;
+            padding: 12px 6px;
+            margin-bottom: 0;
+            box-shadow: none;
         }
-        .news-time {
+        .news-card:last-child { border-bottom: none; }
+        .news-card:focus { border-radius: 6px; }
+
+        .news-meta {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             color: var(--text-muted);
+            margin-bottom: 6px;
+            font-family: -apple-system, sans-serif; /* Keep meta sans-serif even if reading in serif */
         }
         .news-title {
             font-weight: 600;
-            color: var(--text-main);
-            font-size: 0.95em;
+            font-size: 1.1em;
+            color: var(--text);
+            margin-bottom: 6px;
             line-height: 1.3;
         }
         .news-snippet {
-            font-size: 0.85em;
+            font-size: 0.9em;
             color: var(--text-muted);
-            margin-top: 4px;
-            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        /* Article Reader View */
-        .article-meta {
-            font-size: 0.78em;
-            color: var(--text-muted);
-            margin-bottom: 15px;
+        /* Settings Specific */
+        .toggle-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .article-content p {
-            line-height: 1.6;
-            margin-bottom: 1.3em;
-        }
-
-        /* Options Backdrop Modal Menu Overlays */
-        .options-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 36px;
-            background: rgba(0,0,0,0.4);
-            z-index: 2000;
-            justify-content: flex-end;
-            flex-direction: column;
-        }
-        .options-content {
-            background: var(--surface);
-            padding: 15px;
-            border-top: 2px solid var(--focus-outline);
-        }
-        .options-title {
-            font-size: 0.85rem;
+        .toggle-status {
+            font-size: 0.8em;
             font-weight: bold;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-            text-transform: uppercase;
+            color: var(--focus-outline);
         }
 
-        /* Native Feature Phone Navigation Bar Layout */
+        /* Full Text Reader */
+        .article-content p { line-height: 1.6; margin-bottom: 1.2em; }
+        .article-content img { max-width: 100%; height: auto; border-radius: 4px; }
+
+        /* Hardware Softkey Bar */
         .softkey-bar {
             position: fixed;
-            bottom: 0; left: 0; right: 0;
-            height: 36px;
-            background: #111111;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 38px;
+            background: #1a1a1a;
             color: #ffffff;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 12px;
+            padding: 0 10px;
             font-family: -apple-system, sans-serif;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
-            z-index: 3000;
+            z-index: 1000;
         }
         .softkey-btn {
             background: transparent;
@@ -202,133 +171,128 @@
             padding: 5px;
             width: auto;
             margin: 0;
+            box-shadow: none;
         }
+        .softkey-center { font-size: 12px; color: #888888; font-weight: normal; }
     </style>
 </head>
 <body class="theme-light font-sans size-medium">
 
-    <!-- VIEW 1: HOME TIMELINE (MIXED FEEDS) -->
+    <!-- VIEW: MIXED HOME FEED -->
     <div id="view-home" class="view active">
-        <h1>Timeline</h1>
-        <div id="timeline-list"></div>
+        <h1>Latest News</h1>
+        <div id="home-list"></div>
     </div>
 
-    <!-- VIEW 2: BROWSE INDIVIDUAL CHANNELS -->
+    <!-- VIEW: HOME OPTIONS MENU -->
+    <div id="view-options" class="view">
+        <h1>Options</h1>
+        <button class="clickable-item" onclick="loadMixedFeed()" accesskey="1">1. Refresh All</button>
+        <button class="clickable-item" onclick="switchView('channels')" accesskey="2">2. Browse Channels</button>
+    </div>
+
+    <!-- VIEW: INDIVIDUAL CHANNELS DIRECTORY -->
     <div id="view-channels" class="view">
-        <h1>Channels</h1>
+        <h1>My Channels</h1>
         <div id="channels-list"></div>
     </div>
 
-    <!-- VIEW 3: SINGLE CHANNEL HEADLINES -->
+    <!-- VIEW: SINGLE CHANNEL HEADLINES -->
     <div id="view-headlines" class="view">
         <h1 id="headlines-title">Channel</h1>
         <div id="headlines-list"></div>
     </div>
 
-    <!-- VIEW 4: ARTICLE READER -->
+    <!-- VIEW: FULL ARTICLE READER -->
     <div id="view-reader" class="view">
-        <h1 id="reader-title">Loading...</h1>
-        <div class="article-meta" id="reader-meta"></div>
+        <h1 id="reader-title" style="text-align: left; font-size: 1.4em;">Loading...</h1>
+        <div class="section-label" id="reader-meta" style="margin-top: 5px;">Please wait</div>
         <div class="article-content" id="reader-content"></div>
     </div>
 
-    <!-- VIEW 5: SETTINGS (INCLUDES ADDER & CHOSEN MIX MIXED CONFIG) -->
+    <!-- VIEW: SETTINGS & FEED MANAGEMENT -->
     <div id="view-settings" class="view">
         <h1>Settings</h1>
         
-        <label for="setting-theme">Theme</label>
-        <select id="setting-theme" onchange="applySettings()">
-            <option value="theme-light">Light Editorial</option>
+        <div class="section-label">Display</div>
+        <select id="setting-theme" class="clickable-item" onchange="applySettings()">
+            <option value="theme-light">Light Mode</option>
             <option value="theme-dark">Dark Mode</option>
-            <option value="theme-sepia">Sepia Book</option>
-            <option value="theme-oled">OLED Black</option>
+            <option value="theme-sepia">Sepia Paper</option>
         </select>
-
-        <label for="setting-font">Font Style</label>
-        <select id="setting-font" onchange="applySettings()">
-            <option value="font-sans">Sans-Serif</option>
-            <option value="font-serif">Serif</option>
-            <option value="font-mono">Monospace</option>
+        <select id="setting-font" class="clickable-item" onchange="applySettings()">
+            <option value="font-sans">Clean Sans-Serif</option>
+            <option value="font-serif">Literary Serif</option>
         </select>
-
-        <label for="setting-size">Text Size</label>
-        <select id="setting-size" onchange="applySettings()">
-            <option value="size-small">Small</option>
-            <option value="size-medium">Medium</option>
-            <option value="size-large">Large</option>
+        <select id="setting-size" class="clickable-item" onchange="applySettings()">
+            <option value="size-small">Small Text</option>
+            <option value="size-medium">Standard Text</option>
+            <option value="size-large">Large Text</option>
         </select>
-
-        <h2>Include in Timeline</h2>
-        <div id="mixed-toggle-container"></div>
-
-        <h2>Add Custom RSS Feed</h2>
-        <input type="text" id="custom-name" placeholder="Channel Name">
-        <input type="url" id="custom-url" placeholder="https://site.com/rss">
-        <button onclick="addNewFeed()">+ Save Channel</button>
         
-        <button onclick="resetFeedsToDefault()" style="background:#8b0000; color:white; margin-top:15px; text-align:center;">Reset Defaults</button>
+        <div class="section-label">Home Feed Manager</div>
+        <div id="settings-feed-toggles"></div>
+
+        <div class="section-label">Add Custom Feed</div>
+        <input type="text" id="custom-name" placeholder="Name (e.g., The Verge)">
+        <input type="url" id="custom-url" placeholder="https://example.com/rss">
+        <button onclick="addNewFeed()">+ Add to Channels</button>
+
+        <button onclick="resetFeedsToDefault()" style="background:#ff3b30; color:white; border:none; margin-top:25px;">Reset All Data</button>
     </div>
 
-    <!-- OPTIONS CONTEXT OVERLAY MODAL -->
-    <div id="optionsModal" class="options-modal" onclick="closeOptionsModal()">
-        <div class="options-content" onclick="event.stopPropagation()">
-            <div class="options-title">Options</div>
-            <button class="clickable-item" onclick="handleOptionsSelection(1)">1. Refresh Timeline</button>
-            <button class="clickable-item" onclick="handleOptionsSelection(2)">2. Browse Channels</button>
-        </div>
-    </div>
-
-    <!-- HARDWARE KEY INTERFACE BAR -->
+    <!-- NATIVE SOFTKEY BAR -->
     <div class="softkey-bar">
-        <button class="softkey-btn" id="lsk-label" onclick="handleLSKClick()">Menu</button>
-        <div style="font-size:11px; color:#888;">D-Pad Selection</div>
-        <button class="softkey-btn" id="rsk-label" onclick="handleRSKClick()">Options</button>
+        <button class="softkey-btn" id="lsk-label" onclick="handleLSKClick()">Options</button>
+        <div class="softkey-center">Select</div>
+        <button class="softkey-btn" id="rsk-label" onclick="handleRSKClick()">Settings</button>
     </div>
 
     <script>
-        // Switch to AllOrigins raw scraper proxy to prevent CORS/Cloudflare blocks on NYT & Prothom Alo
+        // Switched to allorigins.win for maximum CORS compatibility with NYT and Prothom Alo
         const proxyUrl = "https://api.allorigins.win/raw?url=";
         
         const defaultFeeds = [
-            { name: "BBC News", url: "https://feeds.bbci.co.uk/news/rss.xml", includeInMixed: true },
-            { name: "NY Times", url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", includeInMixed: true },
-            { name: "Prothom Alo", url: "https://www.prothomalo.com/feed/", includeInMixed: true },
-            { name: "Daily Star", url: "https://www.thedailystar.net/frontpage/rss.xml", includeInMixed: true }
+            { id: "bbc", name: "BBC News", url: "https://feeds.bbci.co.uk/news/rss.xml", enabled: true },
+            { id: "nyt", name: "New York Times", url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", enabled: true },
+            { id: "palo", name: "Prothom Alo", url: "https://www.prothomalo.com/feed/", enabled: true },
+            { id: "star", name: "The Daily Star", url: "https://www.thedailystar.net/frontpage/rss.xml", enabled: true }
         ];
 
         let state = {
             feeds: [],
-            currentView: "home",
+            currentView: "home", 
             activeFeedUrl: "",
             activeArticleUrl: "",
             settings: { theme: "theme-light", font: "font-sans", size: "size-medium" }
         };
 
+        // --- INITIALIZATION ---
         window.addEventListener('DOMContentLoaded', () => {
             loadSavedData();
             setupPhysicalKeyBindings();
-            loadMixedTimeline();
+            loadMixedFeed(); // Start with home mixed feed
         });
 
         function loadSavedData() {
-            const savedFeeds = localStorage.getItem('rss_feeds_v2');
-            const savedSettings = localStorage.getItem('rss_settings_v2');
+            const savedFeeds = localStorage.getItem('rss_feeds');
+            const savedSettings = localStorage.getItem('rss_settings');
             
-            state.feeds = savedFeeds ? JSON.parse(savedFeeds) : [...defaultFeeds];
+            state.feeds = savedFeeds ? JSON.parse(savedFeeds) : JSON.parse(JSON.stringify(defaultFeeds));
             if(savedSettings) state.settings = JSON.parse(savedSettings);
             
             document.getElementById('setting-theme').value = state.settings.theme;
             document.getElementById('setting-font').value = state.settings.font;
             document.getElementById('setting-size').value = state.settings.size;
-            
             applySettingsToDOM();
         }
 
+        // --- SETTINGS & STORAGE ---
         function applySettings() {
             state.settings.theme = document.getElementById('setting-theme').value;
             state.settings.font = document.getElementById('setting-font').value;
             state.settings.size = document.getElementById('setting-size').value;
-            localStorage.setItem('rss_settings_v2', JSON.stringify(state.settings));
+            localStorage.setItem('rss_settings', JSON.stringify(state.settings));
             applySettingsToDOM();
         }
 
@@ -337,323 +301,306 @@
         }
 
         function saveFeedsToStorage() {
-            localStorage.setItem('rss_feeds_v2', JSON.stringify(state.feeds));
+            localStorage.setItem('rss_feeds', JSON.stringify(state.feeds));
         }
 
         function resetFeedsToDefault() {
-            if(confirm("Reset all channel profiles?")) {
-                state.feeds = [...defaultFeeds];
+            if(confirm("Factory reset reader app? All custom feeds will be lost.")) {
+                state.feeds = JSON.parse(JSON.stringify(defaultFeeds));
                 saveFeedsToStorage();
-                renderSettingsLists();
                 switchView('home');
-                loadMixedTimeline();
+                loadMixedFeed();
             }
         }
 
-        function renderSettingsLists() {
-            // Include In Mixed timeline checks
-            const container = document.getElementById('mixed-toggle-container');
+        function toggleFeedStatus(index) {
+            state.feeds[index].enabled = !state.feeds[index].enabled;
+            saveFeedsToStorage();
+            renderSettingsFeedToggles(); // Re-render toggles
+        }
+
+        function renderSettingsFeedToggles() {
+            const container = document.getElementById('settings-feed-toggles');
             container.innerHTML = "";
             state.feeds.forEach((feed, index) => {
-                const div = document.createElement('div');
-                div.className = "checkbox-container";
-                div.tabIndex = 0;
-                div.innerHTML = `
-                    <input type="checkbox" id="chk-${index}" ${feed.includeInMixed ? 'checked' : ''}>
-                    <label for="chk-${index}">${feed.name}</label>
-                `;
-                div.onclick = () => {
-                    const chk = div.querySelector('input');
-                    chk.checked = !chk.checked;
-                    state.feeds[index].includeInMixed = chk.checked;
-                    saveFeedsToStorage();
-                };
-                div.onkeydown = (e) => {
-                    if(e.key === 'Enter') {
-                        e.preventDefault();
-                        div.onclick();
-                    }
-                };
-                container.appendChild(div);
+                const btn = document.createElement('button');
+                btn.className = "clickable-item toggle-btn";
+                // Default enabled to true if undefined from old storage
+                const isEnabled = feed.enabled !== false; 
+                btn.innerHTML = `<span>${feed.name}</span> <span class="toggle-status">${isEnabled ? '[ ON ]' : '[ OFF ]'}</span>`;
+                btn.onclick = () => toggleFeedStatus(index);
+                container.appendChild(btn);
             });
         }
 
         function addNewFeed() {
-            const nameInput = document.getElementById('custom-name');
-            const urlInput = document.getElementById('custom-url');
-            const name = nameInput.value.trim();
-            const url = urlInput.value.trim();
-
-            if(!name || !url) return alert("Fill in all parameters.");
-
-            state.feeds.push({ name, url, includeInMixed: true });
+            const name = document.getElementById('custom-name').value.trim();
+            const url = document.getElementById('custom-url').value.trim();
+            if(!name || !url) { alert("Incomplete input."); return; }
+            state.feeds.push({ id: Date.now().toString(), name, url, enabled: true });
             saveFeedsToStorage();
-            renderSettingsLists();
-            
-            nameInput.value = "";
-            urlInput.value = "";
-            alert("Channel added successfully.");
+            renderSettingsFeedToggles();
+            document.getElementById('custom-name').value = "";
+            document.getElementById('custom-url').value = "";
+            alert("Feed Added!");
         }
 
+        // --- ROUTING ---
         function switchView(viewName) {
             state.currentView = viewName;
-            closeOptionsModal();
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(`view-${viewName}`).classList.add('active');
             
-            if(viewName === 'settings') renderSettingsLists();
-            if(viewName === 'channels') renderChannelsView();
+            // Focus first interactive element for hardware keypad support
+            const focusTarget = document.getElementById(`view-${viewName}`).querySelector('button, input, select, .clickable-item');
+            if(focusTarget) focusTarget.focus();
             
-            const target = document.getElementById(`view-${viewName}`).querySelector('input, select, button, .clickable-item');
-            if(target) target.focus();
+            if(viewName === 'settings') renderSettingsFeedToggles();
+            if(viewName === 'channels') renderChannelsList();
             
             updateSoftkeyLabels();
         }
 
-        // Home View: Multi-feed aggregator pipeline 
-        async function loadMixedTimeline() {
-            const listContainer = document.getElementById('timeline-list');
-            listContainer.innerHTML = "<div style='text-align:center; padding:30px; font-size:14px; color:var(--text-muted);'>Updating collective timeline stream...</div>";
-            
-            const activeFeeds = state.feeds.filter(f => f.includeInMixed);
-            if(activeFeeds.length === 0) {
-                listContainer.innerHTML = "<p style='text-align:center; padding:20px;'>No channels selected for timeline. Go to Settings.</p>";
+        function formatTimeAgo(dateObj) {
+            if(!dateObj || isNaN(dateObj.getTime())) return "";
+            const seconds = Math.floor((new Date() - dateObj) / 1000);
+            let interval = seconds / 3600;
+            if (interval >= 1 && interval < 24) return Math.floor(interval) + "h ago";
+            interval = seconds / 60;
+            if (interval >= 1 && interval < 60) return Math.floor(interval) + "m ago";
+            if (seconds < 60) return "Just now";
+            return dateObj.toLocaleDateString();
+        }
+
+        // --- DATA FETCHING ---
+        async function loadMixedFeed() {
+            switchView('home');
+            const container = document.getElementById('home-list');
+            container.innerHTML = "<div style='text-align:center; padding:30px 10px; color:var(--text-muted);'>Syncing latest articles...</div>";
+
+            const enabledFeeds = state.feeds.filter(f => f.enabled !== false);
+            if(enabledFeeds.length === 0) {
+                container.innerHTML = "<div style='text-align:center; padding:20px;'>All feeds disabled. Go to Settings.</div>";
                 return;
             }
 
-            let masterItems = [];
-            const promises = activeFeeds.map(async (feed) => {
+            let allArticles = [];
+
+            await Promise.allSettled(enabledFeeds.map(async feed => {
                 try {
-                    const response = await fetch(proxyUrl + encodeURIComponent(feed.url));
-                    if(!response.ok) return;
-                    const xmlText = await response.text();
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-                    const items = xmlDoc.querySelectorAll("item");
+                    const res = await fetch(proxyUrl + encodeURIComponent(feed.url));
+                    if (!res.ok) return;
+                    const text = await res.text();
+                    const doc = new DOMParser().parseFromString(text, "text/xml");
                     
+                    const items = doc.querySelectorAll("item, entry"); // RSS and Atom fallback
                     items.forEach(item => {
                         const title = item.querySelector("title")?.textContent || "Untitled";
-                        const link = item.querySelector("link")?.textContent || "";
-                        let desc = item.querySelector("description")?.textContent || "";
-                        let pDate = item.querySelector("pubDate")?.textContent || "";
+                        // Handle standard link or Atom href
+                        const linkNode = item.querySelector("link");
+                        const link = linkNode ? (linkNode.textContent || linkNode.getAttribute("href")) : "";
+                        const desc = (item.querySelector("description, summary")?.textContent || "").replace(/<\/?[^>]+(>|$)/g, "").trim();
                         
-                        desc = desc.replace(/<\/?[^>]+(>|$)/g, "").substring(0, 95);
-                        let timestamp = pDate ? Date.parse(pDate) : 0;
+                        const dateText = item.querySelector("pubDate, updated, published")?.textContent;
+                        const dateObj = dateText ? new Date(dateText) : null;
+                        const timestamp = dateObj && !isNaN(dateObj.getTime()) ? dateObj.getTime() : 0;
 
-                        masterItems.push({ title, link, desc, pubDate: pDate, timestamp, feedName: feed.name });
+                        allArticles.push({ title, link, desc, timestamp, dateObj, source: feed.name });
                     });
-                } catch(e) { console.error("Error reading: " + feed.name, e); }
-            });
+                } catch(e) { console.warn("Failed syncing: " + feed.name); }
+            }));
 
-            await Promise.allSettled(promises);
-            masterItems.sort((a, b) => b.timestamp - a.timestamp);
+            // Sort chronologically (newest first)
+            allArticles.sort((a, b) => b.timestamp - a.timestamp);
+            container.innerHTML = "";
             
-            listContainer.innerHTML = "";
-            if(masterItems.length === 0) {
-                listContainer.innerHTML = "<p style='text-align:center;'>Unable to retrieve network data streams.</p>";
+            if(allArticles.length === 0) {
+                container.innerHTML = "<div style='text-align:center;'>Unable to reach news servers.</div>";
                 return;
             }
 
-            // Limit timeline index loop execution to protect device memory constraints
-            masterItems.slice(0, 35).forEach(item => {
+            // Cap at top 40 for memory efficiency on basic phones
+            allArticles.slice(0, 40).forEach(article => {
+                const timeStr = formatTimeAgo(article.dateObj);
+                const metaText = timeStr ? `${article.source} • ${timeStr}` : article.source;
+                
                 const card = document.createElement('div');
                 card.className = "news-card clickable-item";
                 card.tabIndex = 0;
-                
-                let displayDate = "";
-                if(item.pubDate) {
-                    try { displayDate = new Date(item.pubDate).toLocaleDateString([], {month:'short', day:'numeric'}); } catch(e) { displayDate = ""; }
-                }
-
                 card.innerHTML = `
-                    <div class="news-meta-row">
-                        <span class="feed-badge">${item.feedName}</span>
-                        <span class="news-time">${displayDate}</span>
-                    </div>
-                    <div class="news-title">${item.title}</div>
-                    <div class="news-snippet">${item.desc}...</div>
+                    <div class="news-meta">${metaText}</div>
+                    <div class="news-title">${article.title}</div>
+                    <div class="news-snippet">${article.desc.substring(0, 100)}${article.desc.length > 100 ? '...' : ''}</div>
                 `;
-                card.onclick = () => loadFullArticle(item.link, item.title);
-                card.onkeydown = (e) => { if(e.key === 'Enter') { e.preventDefault(); loadFullArticle(item.link, item.title); } };
-                listContainer.appendChild(card);
+                card.onclick = () => loadFullArticle(article.link, article.title, metaText);
+                card.onkeydown = (e) => { if(e.key === 'Enter') loadFullArticle(article.link, article.title, metaText); };
+                container.appendChild(card);
             });
         }
 
-        function renderChannelsView() {
+        function renderChannelsList() {
             const container = document.getElementById('channels-list');
             container.innerHTML = "";
             state.feeds.forEach(feed => {
                 const btn = document.createElement('button');
                 btn.className = "clickable-item";
                 btn.innerText = feed.name;
-                btn.onclick = () => loadChannelHeadlines(feed.url, feed.name);
+                btn.onclick = () => loadSingleChannel(feed.url, feed.name);
                 container.appendChild(btn);
             });
         }
 
-        async function loadChannelHeadlines(url, name) {
+        async function loadSingleChannel(url, name) {
             state.activeFeedUrl = url;
             switchView('headlines');
             document.getElementById('headlines-title').innerText = name;
             const container = document.getElementById('headlines-list');
-            container.innerHTML = "<div style='text-align:center; padding:30px;'>Opening channel data...</div>";
+            container.innerHTML = "<div style='text-align:center; padding:30px;'>Loading...</div>";
 
             try {
-                const response = await fetch(proxyUrl + encodeURIComponent(url));
-                const xmlText = await response.text();
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-                const items = xmlDoc.querySelectorAll("item");
+                const res = await fetch(proxyUrl + encodeURIComponent(url));
+                const doc = new DOMParser().parseFromString(await res.text(), "text/xml");
+                const items = doc.querySelectorAll("item, entry");
                 
                 container.innerHTML = "";
                 items.forEach(item => {
                     const title = item.querySelector("title")?.textContent || "Untitled";
-                    const link = item.querySelector("link")?.textContent || "";
-                    let desc = item.querySelector("description")?.textContent || "";
-                    desc = desc.replace(/<\/?[^>]+(>|$)/g, "").substring(0, 95);
-
+                    const linkNode = item.querySelector("link");
+                    const link = linkNode ? (linkNode.textContent || linkNode.getAttribute("href")) : "";
+                    const dateText = item.querySelector("pubDate, updated")?.textContent;
+                    const dateObj = dateText ? new Date(dateText) : null;
+                    const timeStr = formatTimeAgo(dateObj);
+                    
                     const card = document.createElement('div');
                     card.className = "news-card clickable-item";
                     card.tabIndex = 0;
                     card.innerHTML = `
+                        <div class="news-meta">${timeStr || 'Recent'}</div>
                         <div class="news-title">${title}</div>
-                        <div class="news-snippet">${desc}...</div>
                     `;
-                    card.onclick = () => loadFullArticle(link, title);
-                    card.onkeydown = (e) => { if(e.key === 'Enter') { e.preventDefault(); loadFullArticle(link, title); } };
+                    card.onclick = () => loadFullArticle(link, title, name);
+                    card.onkeydown = (e) => { if(e.key === 'Enter') loadFullArticle(link, title, name); };
                     container.appendChild(card);
                 });
-            } catch(e) {
-                container.innerHTML = "<p style='color:red;'>Could not load channel feed.</p>";
+            } catch (err) {
+                container.innerHTML = "<div style='text-align:center; color:red;'>Stream error</div>";
             }
         }
 
-        async function loadFullArticle(url, title) {
+        async function loadFullArticle(url, title, meta) {
             state.activeArticleUrl = url;
-            const previousView = state.currentView; 
             switchView('reader');
             
-            // Set dynamic memory trail context parameter onto left navigation node back button
-            document.getElementById('lsk-label').setAttribute('data-backview', previousView);
-            
             document.getElementById('reader-title').innerText = title;
-            document.getElementById('reader-meta').innerText = `Source: ${url}`;
-            const contentContainer = document.getElementById('reader-content');
-            contentContainer.innerHTML = "<div style='text-align:center; padding:30px;'>Scraping clean article body text...</div>";
+            document.getElementById('reader-meta').innerText = meta || 'Article View';
+            const content = document.getElementById('reader-content');
+            content.innerHTML = "<div style='text-align:center; padding:40px 10px; color:var(--text-muted);'>Extracting text...</div>";
 
             try {
-                const response = await fetch(proxyUrl + encodeURIComponent(url));
-                const htmlText = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlText, "text/html");
+                const res = await fetch(proxyUrl + encodeURIComponent(url));
+                const htmlText = await res.text();
+                const doc = new DOMParser().parseFromString(htmlText, "text/html");
 
-                const targetArea = doc.querySelector('article, main, [class*="article-body"], [class*="story-body"], .entry-content');
-                let processedHTML = "";
+                const targetArea = doc.querySelector('article, main, .article-body, .story-body, .entry-content');
+                let parsedHtml = "";
 
                 if(targetArea) {
-                    const nodes = targetArea.querySelectorAll('p, h2, h3');
-                    nodes.forEach(n => {
-                        if(n.textContent.trim().length > 15) {
-                            processedHTML += `<p>${n.textContent.trim()}</p>`;
-                        }
+                    targetArea.querySelectorAll('p, h2, h3').forEach(n => {
+                        if(n.textContent.trim().length > 10) parsedHtml += `<${n.tagName.toLowerCase()}>${n.innerHTML}</${n.tagName.toLowerCase()}>`;
                     });
                 }
 
-                if(!processedHTML || processedHTML.length < 200) {
-                    processedHTML = "";
+                if(!parsedHtml || parsedHtml.length < 200) {
+                    parsedHtml = "";
                     doc.querySelectorAll('p').forEach(p => {
-                        if(p.textContent.trim().length > 35) {
-                            processedHTML += `<p>${p.textContent.trim()}</p>`;
-                        }
+                        if(p.textContent.trim().length > 40) parsedHtml += `<p>${p.innerHTML}</p>`;
                     });
                 }
 
-                contentContainer.innerHTML = processedHTML || "<p>Failed to load clean text extraction.</p>";
+                // Strip script tags and inline styles for safety and layout integrity
+                parsedHtml = parsedHtml.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+                parsedHtml = parsedHtml.replace(/style="[^"]*"/gi, "");
+                
+                if(!parsedHtml) {
+                    content.innerHTML = `<button class='clickable-item' onclick='window.open("${url}", "_blank")'>Open External Browser</button>`;
+                } else {
+                    content.innerHTML = parsedHtml;
+                }
             } catch (err) {
-                contentContainer.innerHTML = "<p>Network connection failed parsing elements.</p>";
+                content.innerHTML = "<p>Extraction failed. Protected webpage.</p>";
             }
         }
 
-        // Overlay Modal Operations
-        function openOptionsModal() {
-            document.getElementById('optionsModal').style.display = "flex";
-            const clearBtn = document.getElementById('optionsModal').querySelector('.clickable-item');
-            if(clearBtn) clearBtn.focus();
-        }
-
-        function closeOptionsModal() {
-            document.getElementById('optionsModal').style.display = "none";
-        }
-
-        function handleOptionsSelection(optionIndex) {
-            closeOptionsModal();
-            if(optionIndex === 1) {
-                loadMixedTimeline();
-                switchView('home');
-            } else if(optionIndex === 2) {
-                switchView('channels');
-            }
-        }
-
+        // --- HARDWARE NAVIGATION LOGIC ---
         function updateSoftkeyLabels() {
             const lsk = document.getElementById('lsk-label');
             const rsk = document.getElementById('rsk-label');
 
             if (state.currentView === "home") {
-                lsk.innerText = "Settings";
-                rsk.innerText = "Options";
+                lsk.innerText = "Options"; rsk.innerText = "Settings";
+            } else if (state.currentView === "options") {
+                lsk.innerText = "Select"; rsk.innerText = "Back";
             } else if (state.currentView === "channels") {
-                lsk.innerText = "Back";
-                rsk.innerText = "";
+                lsk.innerText = "Select"; rsk.innerText = "Back";
             } else if (state.currentView === "headlines") {
-                lsk.innerText = "Back";
-                rsk.innerText = "Refresh";
+                lsk.innerText = "Select"; rsk.innerText = "Back";
             } else if (state.currentView === "reader") {
-                lsk.innerText = "Back";
-                rsk.innerText = "External";
+                lsk.innerText = "External"; rsk.innerText = "Back";
             } else if (state.currentView === "settings") {
-                lsk.innerText = "Back";
-                rsk.innerText = "";
+                lsk.innerText = "Save"; rsk.innerText = "Back";
             }
         }
 
         function handleLSKClick() {
             if (state.currentView === "home") {
-                switchView('settings');
-            } else if (state.currentView === "channels" || state.currentView === "settings") {
-                switchView('home');
-            } else if (state.currentView === "headlines") {
-                switchView('channels');
+                switchView('options');
+            } else if (state.currentView === "options") {
+                // If focus is on a button inside options, click it.
+                const active = document.activeElement;
+                if(active && active.tagName === 'BUTTON') active.click();
+            } else if (state.currentView === "channels" || state.currentView === "headlines") {
+                const active = document.activeElement;
+                if(active && active.classList.contains('clickable-item')) active.click();
             } else if (state.currentView === "reader") {
-                const backTarget = document.getElementById('lsk-label').getAttribute('data-backview') || 'home';
-                switchView(backTarget);
+                window.open(state.activeArticleUrl, '_blank');
+            } else if (state.currentView === "settings") {
+                applySettings();
+                switchView('home');
             }
         }
 
         function handleRSKClick() {
             if (state.currentView === "home") {
-                openOptionsModal();
+                switchView('settings');
+            } else if (state.currentView === "options") {
+                switchView('home');
+            } else if (state.currentView === "channels") {
+                switchView('home');
             } else if (state.currentView === "headlines") {
-                loadChannelHeadlines(state.activeFeedUrl, document.getElementById('headlines-title').innerText);
+                switchView('channels');
             } else if (state.currentView === "reader") {
-                window.open(state.activeArticleUrl, '_blank');
+                // Return to previous contextual view logically
+                if(state.activeFeedUrl) switchView('headlines');
+                else switchView('home');
+            } else if (state.currentView === "settings") {
+                switchView('home');
             }
         }
 
         function setupPhysicalKeyBindings() {
             window.addEventListener('keydown', (e) => {
+                // Physical LSK / RSK bindings common on KaiOS / Cloud Phones
                 if (e.key === 'SoftLeft' || e.key === 'F1' || e.keyCode === 118) {
-                    e.preventDefault();
-                    handleLSKClick();
+                    e.preventDefault(); handleLSKClick();
                 }
                 if (e.key === 'SoftRight' || e.key === 'F2' || e.keyCode === 119) {
-                    e.preventDefault();
-                    handleRSKClick();
+                    e.preventDefault(); handleRSKClick();
                 }
-                // Hotkeys 1 & 2 when inside options context overlay modal
-                if(document.getElementById('optionsModal').style.display === "flex") {
-                    if(e.key === '1') { e.preventDefault(); handleOptionsSelection(1); }
-                    if(e.key === '2') { e.preventDefault(); handleOptionsSelection(2); }
+                
+                // Shortcut Keys from Prompt (1 and 2 mapped to Home/Options state)
+                if (state.currentView === 'home' || state.currentView === 'options') {
+                    if (e.key === '1') { e.preventDefault(); loadMixedFeed(); }
+                    if (e.key === '2') { e.preventDefault(); switchView('channels'); }
                 }
             });
         }
