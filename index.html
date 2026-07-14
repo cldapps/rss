@@ -85,12 +85,19 @@
         /* Refresh spinner inside reader */
         .reader-loading{text-align:center;padding:24px 0;font-size:11px;color:var(--text-muted);}
 
-        /* Options overlay */
+        /* Options overlay — fully themed */
         #options-overlay{
             display:none;position:absolute;top:0;left:0;right:0;bottom:28px;
             background:var(--bg);z-index:500;flex-direction:column;
+            border-top:2px solid var(--border);
         }
         #options-overlay.active{display:flex;}
+        #options-overlay .opt-hint{
+            font-size:9px;text-transform:uppercase;letter-spacing:.07em;
+            color:var(--text-muted);padding:6px 6px 2px;border-bottom:1px solid var(--border);
+        }
+        #options-overlay .clickable-item:focus .opt-key{color:var(--focus-text);opacity:.7;}
+        .opt-key{font-size:10px;color:var(--text-muted);margin-right:8px;min-width:12px;}
 
         .softkey-bar{
             height:28px;background:#1a1a1a;color:#fff;
@@ -103,9 +110,6 @@
 
         #sync-status{font-size:10px;text-align:center;color:var(--text-muted);padding:4px;display:none;font-weight:bold;background:var(--surface);border-bottom:1px solid var(--border);}
         .empty-state{text-align:center;padding:30px 10px;font-size:12px;color:var(--text-muted);}
-
-        /* Channel shortcut badges */
-        .ch-key{font-size:10px;color:var(--text-muted);margin-right:6px;min-width:14px;}
 
         /* Feed visibility dot */
         .vis-indicator{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-left:6px;}
@@ -165,9 +169,10 @@
     </div>
 
     <div id="options-overlay">
-        <button class="clickable-item" onclick="closeOptions();forceRefresh();">1. Force Refresh</button>
-        <button class="clickable-item" onclick="closeOptions();switchView('channels');">2. Browse Channels</button>
-        <button class="clickable-item" onclick="closeOptions();switchView('settings');">3. Settings</button>
+        <div class="opt-hint">Options</div>
+        <button class="clickable-item" onclick="closeOptions();forceRefresh();"><span class="opt-key">↺</span>Force Refresh</button>
+        <button class="clickable-item" onclick="closeOptions();switchView('channels');"><span class="opt-key">≡</span>Browse Channels</button>
+        <button class="clickable-item" onclick="closeOptions();switchView('settings');"><span class="opt-key">⚙</span>Settings</button>
     </div>
 
     <div class="softkey-bar">
@@ -540,19 +545,13 @@ function renderChannelsList() {
     const visibleFeeds = state.feeds.filter(f => f.enabled !== false);
     if (!visibleFeeds.length) { c.innerHTML = "<div class='empty-state'>All feeds disabled.</div>"; return; }
 
-    visibleFeeds.forEach((feed, i) => {
+    visibleFeeds.forEach((feed) => {
         const btn = document.createElement('button');
         btn.className = 'clickable-item';
-        const keyHint = i < 9 ? `<span class="ch-key">${i+1}</span>` : '';
-        btn.innerHTML = `${keyHint}<div style="flex:1;font-weight:600;">${feed.name}</div>`;
+        btn.innerHTML = `<div style="flex:1;font-weight:600;">${escHtml(feed.name)}</div>`;
         btn.onclick = () => openChannelHeadlines(feed);
         c.appendChild(btn);
     });
-}
-
-function openChannelByIndex(idx) {
-    const vis = state.feeds.filter(f => f.enabled !== false);
-    if (vis[idx]) openChannelHeadlines(vis[idx]);
 }
 
 function openChannelHeadlines(feed) {
@@ -943,25 +942,13 @@ function setupKeyBindings() {
             return;
         }
 
-        // Number keys — context-aware
+        // Number key shortcuts
         if (!state.optionsOpen) {
-            const num = parseInt(e.key, 10);
-            if (!isNaN(num)) {
-                // Options menu shortcuts on home
-                if (state.currentView === 'home') {
-                    if (num === 0) { e.preventDefault(); forceRefresh(); return; }
-                    // 1-9 → open that channel directly
-                    e.preventDefault();
-                    switchView('channels');
-                    openChannelByIndex(num - 1);
-                    return;
-                }
-                // In channels view: direct jump
-                if (state.currentView === 'channels') {
-                    e.preventDefault();
-                    openChannelByIndex(num - 1);
-                    return;
-                }
+            // 5 = open channel list from anywhere (except reader)
+            if (e.key === '5' && state.currentView !== 'reader') {
+                e.preventDefault();
+                switchView('channels');
+                return;
             }
         }
     });
