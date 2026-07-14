@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Phone RSS Reader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 8px;
+            background: #f7f7f7;
+            color: #222;
+        }
+        h1 {
+            font-size: 1.1rem;
+            margin: 5px 0 10px;
+            text-align: center;
+        }
+        .input-group {
+            display: flex;
+            margin-bottom: 12px;
+        }
+        input[type="url"] {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px 0 0 4px;
+            font-size: 14px;
+        }
+        button {
+            padding: 8px 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        /* CRITICAL FOR FEATURE PHONES: Clear focus states for D-Pad/Keypad navigation */
+        input:focus, button:focus, .news-item a:focus {
+            outline: 3px solid #ff9900;
+            background-color: #fff9e6;
+        }
+        .feed-title {
+            font-size: 0.95rem;
+            font-weight: bold;
+            margin: 8px 0;
+            color: #444;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 4px;
+        }
+        .news-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .news-item {
+            background: white;
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .news-item a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            display: block;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        .news-item p {
+            margin: 0;
+            font-size: 12px;
+            color: #555;
+            line-height: 1.4;
+        }
+        .news-item .date {
+            font-size: 10px;
+            color: #999;
+            margin-top: 4px;
+        }
+        .status {
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Cloud RSS Reader</h1>
+    
+    <div class="input-group">
+        <input type="url" id="feedUrl" value="https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml" placeholder="Enter RSS Feed URL">
+        <button id="loadBtn">Load</button>
+    </div>
+
+    <div id="status" class="status"></div>
+    <div id="feedTitle" class="feed-title"></div>
+    <ul id="newsList" class="news-list"></ul>
+
+    <script>
+        // Using corsproxy.io as a reliable public proxy
+        const proxyUrl = "https://corsproxy.io/?";
+        
+        document.getElementById('loadBtn').addEventListener('click', fetchRSS);
+        document.getElementById('feedUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') fetchRSS();
+        });
+
+        async function fetchRSS() {
+            const feedUrl = document.getElementById('feedUrl').value.trim();
+            const statusDiv = document.getElementById('status');
+            const newsList = document.getElementById('newsList');
+            const feedTitleDiv = document.getElementById('feedTitle');
+            
+            if (!feedUrl) {
+                statusDiv.innerText = "Please enter a URL.";
+                return;
+            }
+            
+            statusDiv.innerText = "Fetching feed...";
+            newsList.innerHTML = "";
+            feedTitleDiv.innerText = "";
+            
+            try {
+                // Prepend proxy to bypass browser CORS rules
+                const targetUrl = proxyUrl + encodeURIComponent(feedUrl);
+                const response = await fetch(targetUrl);
+                
+                if (!response.ok) throw new Error("Failed to fetch data.");
+                
+                const xmlText = await response.text();
+                
+                // Parse the plain text XML into a DOM structure
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                
+                if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
+                    throw new Error("Invalid XML format.");
+                }
+                
+                // Extract feed name
+                const channelTitle = xmlDoc.querySelector("channel > title")?.textContent || "RSS Feed";
+                feedTitleDiv.innerText = channelTitle;
+                
+                // Loop through feed items
+                const items = xmlDoc.querySelectorAll("item");
+                if (items.length === 0) {
+                    statusDiv.innerText = "No news articles found.";
+                    return;
+                }
+                
+                statusDiv.innerText = ""; 
+                
+                items.forEach(item => {
+                    const title = item.querySelector("title")?.textContent || "Untitled";
+                    const link = item.querySelector("link")?.textContent || "#";
+                    let description = item.querySelector("description")?.textContent || "";
+                    const pubDate = item.querySelector("pubDate")?.textContent || "";
+                    
+                    // Strip heavy HTML tags out of descriptions to save screen real estate
+                    description = description.replace(/<\/?[^>]+(>|$)/g, "");
+                    if (description.length > 100) {
+                        description = description.substring(0, 100) + "...";
+                    }
+                    
+                    const li = document.createElement('li');
+                    li.className = 'news-item';
+                    li.innerHTML = `
+                        <a href="${link}" target="_blank">${title}</a>
+                        <p>${description}</p>
+                        <div class="date">${pubDate ? new Date(pubDate).toLocaleDateString() : ''}</div>
+                    `;
+                    newsList.appendChild(li);
+                });
+                
+            } catch (error) {
+                console.error(error);
+                statusDiv.innerText = "Error loading feed. Check URL or proxy availability.";
+            }
+        }
+        
+        // Auto-load the initial feed on launch
+        fetchRSS();
+    </script>
+</body>
+</html>
