@@ -249,8 +249,12 @@
     </div>
 
     <script>
-        // Switched to allorigins.win for maximum CORS compatibility with NYT and Prothom Alo
-        const proxyUrl = "https://api.allorigins.win/raw?url=";
+        // Array of reliable public proxies for auto-fallback routing
+        const proxyList = [
+            "https://api.codetabs.com/v1/proxy?quest=",
+            "https://corsproxy.io/?",
+            "https://thingproxy.freeboard.io/fetch/"
+        ];
         
         const defaultFeeds = [
             { id: "bbc", name: "BBC News", url: "https://feeds.bbci.co.uk/news/rss.xml", enabled: true },
@@ -271,7 +275,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             loadSavedData();
             setupPhysicalKeyBindings();
-            loadMixedFeed(); // Start with home mixed feed
+            loadMixedFeed(); 
         });
 
         function loadSavedData() {
@@ -285,6 +289,23 @@
             document.getElementById('setting-font').value = state.settings.font;
             document.getElementById('setting-size').value = state.settings.size;
             applySettingsToDOM();
+        }
+
+        // --- ADVANCED NETWORK ENGINE (MULTI-PROXY) ---
+        async function fetchWithFallback(targetUrl) {
+            let lastError;
+            for (let i = 0; i < proxyList.length; i++) {
+                try {
+                    const res = await fetch(proxyList[i] + encodeURIComponent(targetUrl));
+                    if (res.ok) {
+                        return await res.text();
+                    }
+                } catch (err) {
+                    lastError = err;
+                    console.warn(`Proxy ${i + 1} failed, trying next...`);
+                }
+            }
+            throw new Error(lastError ? lastError.message : "All proxies failed or access denied by publisher.");
         }
 
         // --- SETTINGS & STORAGE ---
@@ -316,7 +337,7 @@
         function toggleFeedStatus(index) {
             state.feeds[index].enabled = !state.feeds[index].enabled;
             saveFeedsToStorage();
-            renderSettingsFeedToggles(); // Re-render toggles
+            renderSettingsFeedToggles();
         }
 
         function renderSettingsFeedToggles() {
@@ -325,7 +346,6 @@
             state.feeds.forEach((feed, index) => {
                 const btn = document.createElement('button');
                 btn.className = "clickable-item toggle-btn";
-                // Default enabled to true if undefined from old storage
                 const isEnabled = feed.enabled !== false; 
                 btn.innerHTML = `<span>${feed.name}</span> <span class="toggle-status">${isEnabled ? '[ ON ]' : '[ OFF ]'}</span>`;
                 btn.onclick = () => toggleFeedStatus(index);
@@ -351,7 +371,6 @@
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(`view-${viewName}`).classList.add('active');
             
-            // Focus first interactive element for hardware keypad support
             const focusTarget = document.getElementById(`view-${viewName}`).querySelector('button, input, select, .clickable-item');
             if(focusTarget) focusTarget.focus();
             
@@ -385,18 +404,20 @@
             }
 
             let allArticles = [];
+            let successfulFeeds = 0;
 
             await Promise.allSettled(enabledFeeds.map(async feed => {
                 try {
-                    const res = await fetch(proxyUrl + encodeURIComponent(feed.url));
-                    if (!res.ok) return;
-                    const text = await res.text();
+                    const text = await fetchWithFallback(feed.url);
                     const doc = new DOMParser().parseFromString(text, "text/xml");
                     
-                    const items = doc.querySelectorAll("item, entry"); // RSS and Atom fallback
+                    if (doc.querySelector("parsererror")) throw new Error("Invalid XML");
+                    
+                    const items = doc.querySelectorAll("item, entry");
+                    if (items.length > 0) successfulFeeds++;
+
                     items.forEach(item => {
                         const title = item.querySelector("title")?.textContent || "Untitled";
-                        // Handle standard link or Atom href
                         const linkNode = item.querySelector("link");
                         const link = linkNode ? (linkNode.textContent || linkNode.getAttribute("href")) : "";
                         const desc = (item.querySelector("description, summary")?.textContent || "").replace(/<\/?[^>]+(>|$)/g, "").trim();
@@ -410,16 +431,21 @@
                 } catch(e) { console.warn("Failed syncing: " + feed.name); }
             }));
 
-            // Sort chronologically (newest first)
             allArticles.sort((a, b) => b.timestamp - a.timestamp);
             container.innerHTML = "";
             
             if(allArticles.length === 0) {
-                container.innerHTML = "<div style='text-align:center;'>Unable to reach news servers.</div>";
+                container.innerHTML = "<div style='text-align:center; padding:20px; color:red;'>Network Error: All proxies blocked by publishers. Try again later.</div>";
                 return;
             }
 
-            // Cap at top 40 for memory efficiency on basic phones
+            if(successfulFeeds < enabledFeeds.length) {
+                const warning = document.createElement('div');
+                warning.style = "text-align:center; font-size:12px; color:orange; margin-bottom:10px;";
+                warning.innerText = "Some feeds were blocked and could not be loaded.";
+                container.appendChild(warning);
+            }
+
             allArticles.slice(0, 40).forEach(article => {
                 const timeStr = formatTimeAgo(article.dateObj);
                 const metaText = timeStr ? `${article.source} • ${timeStr}` : article.source;
@@ -458,11 +484,15 @@
             container.innerHTML = "<div style='text-align:center; padding:30px;'>Loading...</div>";
 
             try {
-                const res = await fetch(proxyUrl + encodeURIComponent(url));
-                const doc = new DOMParser().parseFromString(await res.text(), "text/xml");
+                const text = await fetchWithFallback(url);
+                const doc = new DOMParser().parseFromString(text, "text/xml");
+                if (doc.querySelector("parsererror")) throw new Error("Invalid XML format");
+
                 const items = doc.querySelectorAll("item, entry");
-                
                 container.innerHTML = "";
+
+                if(items.length === 0) throw new Error("No articles found");
+
                 items.forEach(item => {
                     const title = item.querySelector("title")?.textContent || "Untitled";
                     const linkNode = item.querySelector("link");
@@ -483,7 +513,7 @@
                     container.appendChild(card);
                 });
             } catch (err) {
-                container.innerHTML = "<div style='text-align:center; color:red;'>Stream error</div>";
+                container.innerHTML = `<div style='text-align:center; color:red; padding:20px;'>Feed blocked or unavailable.<br><br>Error: ${err.message}</div>`;
             }
         }
 
@@ -497,8 +527,7 @@
             content.innerHTML = "<div style='text-align:center; padding:40px 10px; color:var(--text-muted);'>Extracting text...</div>";
 
             try {
-                const res = await fetch(proxyUrl + encodeURIComponent(url));
-                const htmlText = await res.text();
+                const htmlText = await fetchWithFallback(url);
                 const doc = new DOMParser().parseFromString(htmlText, "text/html");
 
                 const targetArea = doc.querySelector('article, main, .article-body, .story-body, .entry-content');
@@ -517,7 +546,6 @@
                     });
                 }
 
-                // Strip script tags and inline styles for safety and layout integrity
                 parsedHtml = parsedHtml.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
                 parsedHtml = parsedHtml.replace(/style="[^"]*"/gi, "");
                 
@@ -527,7 +555,7 @@
                     content.innerHTML = parsedHtml;
                 }
             } catch (err) {
-                content.innerHTML = "<p>Extraction failed. Protected webpage.</p>";
+                content.innerHTML = `<p style="color:red; text-align:center;">Publisher blocked content extraction.</p><button class='clickable-item' onclick='window.open("${url}", "_blank")'>Open in External Browser</button>`;
             }
         }
 
@@ -555,7 +583,6 @@
             if (state.currentView === "home") {
                 switchView('options');
             } else if (state.currentView === "options") {
-                // If focus is on a button inside options, click it.
                 const active = document.activeElement;
                 if(active && active.tagName === 'BUTTON') active.click();
             } else if (state.currentView === "channels" || state.currentView === "headlines") {
@@ -579,7 +606,6 @@
             } else if (state.currentView === "headlines") {
                 switchView('channels');
             } else if (state.currentView === "reader") {
-                // Return to previous contextual view logically
                 if(state.activeFeedUrl) switchView('headlines');
                 else switchView('home');
             } else if (state.currentView === "settings") {
@@ -589,7 +615,6 @@
 
         function setupPhysicalKeyBindings() {
             window.addEventListener('keydown', (e) => {
-                // Physical LSK / RSK bindings common on KaiOS / Cloud Phones
                 if (e.key === 'SoftLeft' || e.key === 'F1' || e.keyCode === 118) {
                     e.preventDefault(); handleLSKClick();
                 }
@@ -597,7 +622,6 @@
                     e.preventDefault(); handleRSKClick();
                 }
                 
-                // Shortcut Keys from Prompt (1 and 2 mapped to Home/Options state)
                 if (state.currentView === 'home' || state.currentView === 'options') {
                     if (e.key === '1') { e.preventDefault(); loadMixedFeed(); }
                     if (e.key === '2') { e.preventDefault(); switchView('channels'); }
@@ -605,5 +629,6 @@
             });
         }
     </script>
+
 </body>
 </html>
