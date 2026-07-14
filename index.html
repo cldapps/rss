@@ -16,7 +16,6 @@
             --surface: #ffffff;
             --text: #1a1a1a;
             --text-muted: #6e6e73;
-            /* Dark but transparent accent color */
             --focus-bg: rgba(0, 0, 0, 0.45); 
             --focus-text: #ffffff;
             --border: #e5e5ea;
@@ -235,7 +234,7 @@
         state.feeds = savedFeeds ? JSON.parse(savedFeeds) : JSON.parse(JSON.stringify(defaultFeeds));
         if(savedSettings) {
             const parsed = JSON.parse(savedSettings);
-            state.settings = { ...state.settings, ...parsed }; // Merge to retain defaults if missing
+            state.settings = { ...state.settings, ...parsed };
         }
         applySettingsToDOM();
     }
@@ -261,7 +260,6 @@
         if(viewName === 'settings') { renderSettingsFeedToggles(); }
         else if(viewName === 'channels') { renderChannelsList(); }
 
-        // Snappy focus for fast navigation
         setTimeout(() => {
             const activeView = document.getElementById(`view-${viewName}`);
             const focusTarget = activeView.querySelector('.clickable-item, input, select');
@@ -531,8 +529,6 @@
         state.settings.theme = document.getElementById('setting-theme').value;
         state.settings.size = document.getElementById('setting-size').value;
         state.settings.font = document.getElementById('setting-font').value;
-        
-        // Cache settings locally
         localStorage.setItem('rss_settings', JSON.stringify(state.settings));
         applySettingsToDOM();
     }
@@ -588,41 +584,72 @@
             currentIndex = 0;
         }
         
-        // Removed smooth scrolling to allow rapid holding/clicking speed
         focusables[currentIndex].focus();
         focusables[currentIndex].scrollIntoView({ block: 'nearest' });
     }
 
     function updateSoftkeyLabels() {
-        const lsk = document.getElementById('lsk-label'), csk = document.getElementById('csk-label'), rsk = document.getElementById('rsk-label');
+        const lsk = document.getElementById('lsk-label');
+        const csk = document.getElementById('csk-label');
+        const rsk = document.getElementById('rsk-label');
         const map = {
-            "home": ["Options", "OPEN", "Exit"], 
-            "options": ["Select", "OK", "Back"],
-            "channels": ["Select", "OPEN", "Back"], 
-            "headlines": ["Select", "OPEN", "Back"],
-            "reader": ["Back", "EXTERNAL", ""], 
-            "settings": ["Save", "EDIT", "Back"]
+            "home":      ["Options",  "OPEN",     "Exit"],
+            "options":   ["Select",   "OK",       "Back"],
+            "channels":  ["Select",   "OPEN",     "Back"],
+            "headlines": ["Select",   "OPEN",     "Back"],
+            "reader":    ["Back",     "EXTERNAL", ""],
+            "settings":  ["Save",     "EDIT",     "Back"]
         };
         lsk.innerText = map[state.currentView][0]; 
         csk.innerText = map[state.currentView][1];
         rsk.innerText = map[state.currentView][2];
     }
 
+    // --- FIX: LSK handler with proper early returns and softkey self-click guard ---
     function handleLSKClick() {
-        if (state.currentView === "home") switchView('options');
-        else if (["options", "channels", "headlines"].includes(state.currentView)) {
-            const act = document.activeElement;
-            if(act && (act.tagName === 'BUTTON' || act.classList.contains('clickable-item'))) act.click();
+        if (state.currentView === "home") {
+            switchView('options');
+            return; // Early return — do not fall through
         }
-        else if (state.currentView === "reader") switchView('home'); // LSK acts as Back in reader
-        else if (state.currentView === "settings") { applySettings(); switchView('home'); }
+
+        if (["options", "channels", "headlines"].includes(state.currentView)) {
+            const act = document.activeElement;
+            const lskBtn = document.getElementById('lsk-label');
+            const rskBtn = document.getElementById('rsk-label');
+            // Guard: don't re-click the softkey buttons themselves
+            if (act && act !== lskBtn && act !== rskBtn &&
+                (act.tagName === 'BUTTON' || act.classList.contains('clickable-item'))) {
+                act.click();
+            }
+            return;
+        }
+
+        if (state.currentView === "reader") {
+            switchView('home');
+            return;
+        }
+
+        if (state.currentView === "settings") {
+            applySettings();
+            switchView('home');
+            return;
+        }
     }
 
     function handleRSKClick() {
-        if (state.currentView === "home") window.close(); // Allows OS to exit
-        else if (["options", "channels", "settings"].includes(state.currentView)) switchView('home');
-        else if (state.currentView === "headlines") switchView('channels');
-        // RSK does nothing in reader currently as per requirements
+        if (state.currentView === "home") {
+            window.close();
+            return;
+        }
+        if (["options", "channels", "settings"].includes(state.currentView)) {
+            switchView('home');
+            return;
+        }
+        if (state.currentView === "headlines") {
+            switchView('channels');
+            return;
+        }
+        // RSK does nothing in reader
     }
 
     function setupPhysicalKeyBindings() {
@@ -631,24 +658,23 @@
             if (['SoftLeft', 'F1'].includes(e.key) || e.keyCode === 118) { e.preventDefault(); handleLSKClick(); return; }
             if (['SoftRight', 'F2'].includes(e.key) || e.keyCode === 119) { e.preventDefault(); handleRSKClick(); return; }
             
-            // Standard Back/EndCall override to navigate back safely
+            // Back / EndCall / Escape
             if (['Backspace', 'BrowserBack', 'Escape'].includes(e.key) || e.keyCode === 8) {
                 if (state.currentView !== 'home') {
                     e.preventDefault();
-                    if (state.currentView === 'reader') handleLSKClick(); // Because LSK is back now
+                    if (state.currentView === 'reader') handleLSKClick();
                     else handleRSKClick(); 
                     return;
                 }
             }
 
-            // Arrow Keys + Numpad 2/8 logic for rapid scroll
+            // Arrow Keys + Numpad 2/8 for scroll
             const isDown = e.key === 'ArrowDown' || e.key === '8';
-            const isUp = e.key === 'ArrowUp' || e.key === '2';
+            const isUp   = e.key === 'ArrowUp'   || e.key === '2';
 
             if (isUp || isDown) {
                 if (state.currentView === 'reader') {
                     const readerView = document.getElementById('view-reader');
-                    // Large pixel jump for fast reading
                     readerView.scrollTop += (isDown ? 80 : -80);
                     e.preventDefault(); 
                 } else {
@@ -658,11 +684,11 @@
                 return;
             }
 
-            // Enter / Numpad 5 key
+            // Enter / Numpad 5
             if (e.key === 'Enter' || e.key === '5') {
                 if (state.currentView === 'reader') {
                     e.preventDefault();
-                    window.open(state.activeArticleUrl, '_blank'); // External browser link
+                    window.open(state.activeArticleUrl, '_blank');
                 } else if (document.activeElement && document.activeElement.click) {
                     e.preventDefault();
                     document.activeElement.click();
@@ -670,7 +696,7 @@
                 return;
             }
 
-            // Shortcuts on home/options menus
+            // Numeric shortcuts on home/options
             if (state.currentView === 'home' || state.currentView === 'options') {
                 if (e.key === '1') { e.preventDefault(); forceRefresh(); }
                 if (e.key === '2') { e.preventDefault(); switchView('channels'); }
@@ -678,8 +704,8 @@
             }
         });
         
-        // Handle native back behavior to prevent exiting app when deep in menus
-        window.addEventListener("back", function(e){
+        // Native back button (KaiOS / feature phone)
+        window.addEventListener("back", function(e) {
             if (state.currentView !== 'home') {
                 e.preventDefault(); 
                 if (state.currentView === 'reader') handleLSKClick();
