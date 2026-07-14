@@ -3,189 +3,506 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloud Phone RSS Reader</title>
+    <title>Cloud Phone Advanced RSS</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 8px;
-            background: #f7f7f7;
-            color: #222;
+        /* Base Styling & Variables */
+        :root {
+            --bg: #f7f7f7;
+            --surface: #ffffff;
+            --text: #222222;
+            --text-muted: #666666;
+            --accent: #007bff;
+            --focus-outline: #ff9900;
+            --focus-bg: #fff9e6;
+            --border: #dddddd;
         }
-        h1 {
-            font-size: 1.1rem;
-            margin: 5px 0 10px;
+
+        /* Theme Mapping */
+        body.theme-light {
+            --bg: #f7f7f7; --surface: #ffffff; --text: #222222; --text-muted: #666666; --border: #dddddd;
+        }
+        body.theme-dark {
+            --bg: #121212; --surface: #1e1e1e; --text: #e0e0e0; --text-muted: #a0a0a0; --border: #333333; --focus-bg: #2a2515;
+        }
+        body.theme-sepia {
+            --bg: #f4ecd8; --surface: #fdf6e3; --text: #5b4636; --text-muted: #8f7762; --border: #e4d9c4; --focus-bg: #eae0c4;
+        }
+        body.theme-oled {
+            --bg: #000000; --surface: #000000; --text: #ffffff; --text-muted: #888888; --border: #222222; --focus-bg: #111111;
+        }
+
+        /* Typography Mapping */
+        body.font-sans { font-family: system-ui, -apple-system, sans-serif; }
+        body.font-serif { font-family: Georgia, Cambria, "Times New Roman", serif; }
+        body.font-mono { font-family: ui-monospace, Consolas, monospace; }
+
+        body.size-small { font-size: 13px; }
+        body.size-medium { font-size: 16px; }
+        body.size-large { font-size: 20px; }
+
+        /* Layout */
+        body {
+            margin: 0;
+            padding: 0 0 45px 0; /* Clear space for fixed bottom menu bar */
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.2s, color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .view {
+            display: none;
+            padding: 10px;
+        }
+        .view.active {
+            display: block;
+        }
+
+        h1, h2 {
+            font-size: 1.2rem;
+            margin: 5px 0 10px 0;
             text-align: center;
         }
-        .input-group {
-            display: flex;
-            margin-bottom: 12px;
-        }
-        input[type="url"] {
-            flex: 1;
+
+        /* Interactive Elements & D-Pad Focus Styling */
+        input, select, button, .clickable-item {
+            font-size: inherit;
+            font-family: inherit;
+            color: inherit;
+            background: var(--surface);
+            border: 1px solid var(--border);
             padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px 0 0 4px;
-            font-size: 14px;
+            border-radius: 4px;
+            box-sizing: border-box;
+            width: 100%;
+            margin-bottom: 8px;
+            text-align: left;
+            display: block;
+            text-decoration: none;
         }
-        button {
-            padding: 8px 12px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 0 4px 4px 0;
-            font-size: 14px;
+
+        input:focus, select:focus, button:focus, .clickable-item:focus {
+            outline: 3px solid var(--focus-outline);
+            background-color: var(--focus-bg);
+        }
+
+        /* News Cards */
+        .news-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 8px;
             cursor: pointer;
         }
-        /* CRITICAL FOR FEATURE PHONES: Clear focus states for D-Pad/Keypad navigation */
-        input:focus, button:focus, .news-item a:focus {
-            outline: 3px solid #ff9900;
-            background-color: #fff9e6;
-        }
-        .feed-title {
-            font-size: 0.95rem;
+        .news-title {
             font-weight: bold;
-            margin: 8px 0;
-            color: #444;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 4px;
-        }
-        .news-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .news-item {
-            background: white;
-            margin-bottom: 8px;
-            padding: 10px;
-            border-radius: 4px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-        .news-item a {
-            text-decoration: none;
-            color: #007bff;
-            font-weight: bold;
-            display: block;
-            font-size: 14px;
+            color: var(--accent);
             margin-bottom: 4px;
         }
-        .news-item p {
+        .news-snippet {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            line-net: 1.3;
+        }
+
+        /* Full Text Article View Reader Custom Styles */
+        .article-meta {
+            font-size: 0.8em;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 5px;
+        }
+        .article-content p {
+            line-height: 1.5;
+            margin-bottom: 1.2em;
+        }
+
+        /* Native Feature Phone Navigation Bar Layout (LSK / RSK) */
+        .softkey-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 36px;
+            background: #222222;
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+            font-family: system-ui, sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        .softkey-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            width: auto;
             margin: 0;
+            cursor: pointer;
+        }
+        .softkey-btn:focus {
+            outline: none;
+            background: #444444;
+        }
+        .softkey-center {
             font-size: 12px;
-            color: #555;
-            line-height: 1.4;
-        }
-        .news-item .date {
-            font-size: 10px;
-            color: #999;
-            margin-top: 4px;
-        }
-        .status {
-            text-align: center;
-            font-size: 13px;
-            color: #666;
-            margin-top: 10px;
+            color: #aaaaaa;
         }
     </style>
 </head>
-<body>
+<body class="theme-light font-sans size-medium">
 
-    <h1>Cloud RSS Reader</h1>
-    
-    <div class="input-group">
-        <input type="url" id="feedUrl" value="https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml" placeholder="Enter RSS Feed URL">
-        <button id="loadBtn">Load</button>
+    <!-- VIEW 1: FEED LIST SELECTOR -->
+    <div id="view-feeds" class="view active">
+        <h1>My Feeds</h1>
+        <div id="feeds-list"></div>
+        <hr style="border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
+        <h2>Add Custom Feed</h2>
+        <input type="text" id="custom-name" placeholder="Feed Name (e.g., TechNews)">
+        <input type="url" id="custom-url" placeholder="https://example.com/rss.xml">
+        <button id="add-feed-btn" onclick="addNewFeed()">+ Add Feed URL</button>
     </div>
 
-    <div id="status" class="status"></div>
-    <div id="feedTitle" class="feed-title"></div>
-    <ul id="newsList" class="news-list"></ul>
+    <!-- VIEW 2: HEADLINES LIST -->
+    <div id="view-headlines" class="view">
+        <h1 id="headlines-title">Headlines</h1>
+        <div id="headlines-list"></div>
+    </div>
+
+    <!-- VIEW 3: FULL ARTICLE IN-APP READER -->
+    <div id="view-reader" class="view">
+        <h1 id="reader-title">Loading Article...</h1>
+        <div class="article-meta" id="reader-meta">Please wait...</div>
+        <div class="article-content" id="reader-content"></div>
+    </div>
+
+    <!-- VIEW 4: SETTINGS / DISPLAY CONFIG -->
+    <div id="view-settings" class="view">
+        <h1>Reader Display Settings</h1>
+        
+        <label for="setting-theme">Reading Theme</label>
+        <select id="setting-theme" onchange="applySettings()">
+            <option value="theme-light">Light Mode</option>
+            <option value="theme-dark">Dark Mode</option>
+            <option value="theme-sepia">Sepia Paper</option>
+            <option value="theme-oled">OLED High-Contrast Black</option>
+        </select>
+
+        <label for="setting-font">Typography Font Style</label>
+        <select id="setting-font" onchange="applySettings()">
+            <option value="font-sans">Clean Sans-Serif</option>
+            <option value="font-serif">Literary Serif</option>
+            <option value="font-mono">Technical Monospace</option>
+        </select>
+
+        <label for="setting-size">Reading Font Size</label>
+        <select id="setting-size" onchange="applySettings()">
+            <option value="size-small">Small Text</option>
+            <option value="size-medium">Standard Text</option>
+            <option value="size-large">Large Text</option>
+        </select>
+        
+        <button onclick="resetFeedsToDefault()" style="background:#dc3545; color:white; margin-top:20px; text-align:center;">Reset Default Feeds</button>
+    </div>
+
+    <!-- PERSISTENT HARDWARE-MAPPED ON-SCREEN SOFTKEY NAVIGATION INTERFACE -->
+    <div class="softkey-bar">
+        <button class="softkey-btn" id="lsk-label" onclick="handleLSKClick()">Feeds</button>
+        <div class="softkey-center">D-Pad Navigation</div>
+        <button class="softkey-btn" id="rsk-label" onclick="handleRSKClick()">Settings</button>
+    </div>
 
     <script>
-        // Using corsproxy.io as a reliable public proxy
         const proxyUrl = "https://corsproxy.io/?";
         
-        document.getElementById('loadBtn').addEventListener('click', fetchRSS);
-        document.getElementById('feedUrl').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') fetchRSS();
+        // Default Required Core News Feeds
+        const defaultFeeds = [
+            { name: "BBC News", url: "https://feeds.bbci.co.uk/news/rss.xml" },
+            { name: "New York Times", url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml" },
+            { name: "Prothom Alo Bangla", url: "https://www.prothomalo.com/feed/" },
+            { name: "The Daily Star", url: "https://www.thedailystar.net/frontpage/rss.xml" }
+        ];
+
+        let state = {
+            feeds: [],
+            currentView: "feeds", 
+            activeFeedUrl: "",
+            activeArticleUrl: "",
+            settings: {
+                theme: "theme-light",
+                font: "font-sans",
+                size: "size-medium"
+            }
+        };
+
+        // Initialize App State & Fetch Local Cache
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedData();
+            renderFeedsList();
+            setupPhysicalKeyBindings();
+            updateSoftkeyLabels();
         });
 
-        async function fetchRSS() {
-            const feedUrl = document.getElementById('feedUrl').value.trim();
-            const statusDiv = document.getElementById('status');
-            const newsList = document.getElementById('newsList');
-            const feedTitleDiv = document.getElementById('feedTitle');
+        function loadSavedData() {
+            const savedFeeds = localStorage.getItem('rss_feeds');
+            const savedSettings = localStorage.getItem('rss_settings');
             
-            if (!feedUrl) {
-                statusDiv.innerText = "Please enter a URL.";
-                return;
+            state.feeds = savedFeeds ? JSON.parse(savedFeeds) : [...defaultFeeds];
+            if(savedSettings) {
+                state.settings = JSON.parse(savedSettings);
             }
             
-            statusDiv.innerText = "Fetching feed...";
-            newsList.innerHTML = "";
-            feedTitleDiv.innerText = "";
+            // Render settings selections visually into HTML fields
+            document.getElementById('setting-theme').value = state.settings.theme;
+            document.getElementById('setting-font').value = state.settings.font;
+            document.getElementById('setting-size').value = state.settings.size;
             
-            try {
-                // Prepend proxy to bypass browser CORS rules
-                const targetUrl = proxyUrl + encodeURIComponent(feedUrl);
-                const response = await fetch(targetUrl);
-                
-                if (!response.ok) throw new Error("Failed to fetch data.");
-                
-                const xmlText = await response.text();
-                
-                // Parse the plain text XML into a DOM structure
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-                
-                if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
-                    throw new Error("Invalid XML format.");
-                }
-                
-                // Extract feed name
-                const channelTitle = xmlDoc.querySelector("channel > title")?.textContent || "RSS Feed";
-                feedTitleDiv.innerText = channelTitle;
-                
-                // Loop through feed items
-                const items = xmlDoc.querySelectorAll("item");
-                if (items.length === 0) {
-                    statusDiv.innerText = "No news articles found.";
-                    return;
-                }
-                
-                statusDiv.innerText = ""; 
-                
-                items.forEach(item => {
-                    const title = item.querySelector("title")?.textContent || "Untitled";
-                    const link = item.querySelector("link")?.textContent || "#";
-                    let description = item.querySelector("description")?.textContent || "";
-                    const pubDate = item.querySelector("pubDate")?.textContent || "";
-                    
-                    // Strip heavy HTML tags out of descriptions to save screen real estate
-                    description = description.replace(/<\/?[^>]+(>|$)/g, "");
-                    if (description.length > 100) {
-                        description = description.substring(0, 100) + "...";
-                    }
-                    
-                    const li = document.createElement('li');
-                    li.className = 'news-item';
-                    li.innerHTML = `
-                        <a href="${link}" target="_blank">${title}</a>
-                        <p>${description}</p>
-                        <div class="date">${pubDate ? new Date(pubDate).toLocaleDateString() : ''}</div>
-                    `;
-                    newsList.appendChild(li);
-                });
-                
-            } catch (error) {
-                console.error(error);
-                statusDiv.innerText = "Error loading feed. Check URL or proxy availability.";
+            applySettingsToDOM();
+        }
+
+        function applySettings() {
+            state.settings.theme = document.getElementById('setting-theme').value;
+            state.settings.font = document.getElementById('setting-font').value;
+            state.settings.size = document.getElementById('setting-size').value;
+            
+            localStorage.setItem('rss_settings', JSON.stringify(state.settings));
+            applySettingsToDOM();
+        }
+
+        function applySettingsToDOM() {
+            document.body.className = `${state.settings.theme} ${state.settings.font} ${state.settings.size}`;
+        }
+
+        function saveFeedsToStorage() {
+            localStorage.setItem('rss_feeds', JSON.stringify(state.feeds));
+        }
+
+        function resetFeedsToDefault() {
+            if(confirm("Restore default channels? Custom links will be cleared.")) {
+                state.feeds = [...defaultFeeds];
+                saveFeedsToStorage();
+                renderFeedsList();
+                switchView('feeds');
             }
         }
-        
-        // Auto-load the initial feed on launch
-        fetchRSS();
+
+        function renderFeedsList() {
+            const container = document.getElementById('feeds-list');
+            container.innerHTML = "";
+            state.feeds.forEach((feed, index) => {
+                const btn = document.createElement('button');
+                btn.className = "clickable-item";
+                btn.innerText = feed.name;
+                btn.onclick = () => loadFeedHeadlines(feed.url, feed.name);
+                container.appendChild(btn);
+            });
+        }
+
+        function addNewFeed() {
+            const nameInput = document.getElementById('custom-name');
+            const urlInput = document.getElementById('custom-url');
+            const name = nameInput.value.trim();
+            const url = urlInput.value.trim();
+
+            if(!name || !url) {
+                alert("Please complete both parameters.");
+                return;
+            }
+
+            state.feeds.push({ name, url });
+            saveFeedsToStorage();
+            renderFeedsList();
+            
+            nameInput.value = "";
+            urlInput.value = "";
+            alert("Feed Added Successfully!");
+        }
+
+        // View Router Controller Engine
+        function switchView(viewName) {
+            state.currentView = viewName;
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(`view-${viewName}`).classList.add('active');
+            
+            // Shift screen focus to top item for clean hardware scrolling sequence execution
+            const focusTarget = document.getElementById(`view-${viewName}`).querySelector('input, select, button, .clickable-item');
+            if(focusTarget) focusTarget.focus();
+            
+            updateSoftkeyLabels();
+        }
+
+        // RSS Headline Loader XML Handler
+        async function loadFeedHeadlines(url, name) {
+            state.activeFeedUrl = url;
+            switchView('headlines');
+            document.getElementById('headlines-title').innerText = name;
+            const listContainer = document.getElementById('headlines-list');
+            listContainer.innerHTML = "<div style='text-align:center; padding:20px;'>Fetching data stream...</div>";
+
+            try {
+                const response = await fetch(proxyUrl + encodeURIComponent(url));
+                if (!response.ok) throw new Error("CORS validation failed.");
+                const xmlText = await response.text();
+                
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                const items = xmlDoc.querySelectorAll("item");
+                
+                listContainer.innerHTML = "";
+                
+                if (items.length === 0) {
+                    listContainer.innerHTML = "<p style='text-align:center;'>Empty feed.</p>";
+                    return;
+                }
+
+                items.forEach(item => {
+                    const title = item.querySelector("title")?.textContent || "Untitled Headline";
+                    const link = item.querySelector("link")?.textContent || "";
+                    let desc = item.querySelector("description")?.textContent || "";
+                    
+                    desc = desc.replace(/<\/?[^>]+(>|$)/g, "").substring(0, 90) + "...";
+
+                    const card = document.createElement('div');
+                    card.className = "news-card clickable-item";
+                    card.tabIndex = 0; // Essential property to allow D-Pad focus parsing selection
+                    card.innerHTML = `
+                        <div class="news-title">${title}</div>
+                        <div class="news-snippet">${desc}</div>
+                    `;
+                    card.onclick = () => loadFullArticle(link, title);
+                    card.onkeydown = (e) => { if(e.key === 'Enter') loadFullArticle(link, title); };
+                    
+                    listContainer.appendChild(card);
+                });
+
+            } catch (err) {
+                listContainer.innerHTML = `<p style='text-align:center; color:red;'>Stream error: ${err.message}</p>`;
+            }
+        }
+
+        // Deep In-App HTML Web Scraper Reader Engine
+        async function loadFullArticle(url, title) {
+            state.activeArticleUrl = url;
+            switchView('reader');
+            
+            document.getElementById('reader-title').innerText = title;
+            document.getElementById('reader-meta').innerText = `Source Link: ${url}`;
+            const contentContainer = document.getElementById('reader-content');
+            contentContainer.innerHTML = "<div style='text-align:center; padding:30px;'>Scraping remote full-text webpage...</div>";
+
+            try {
+                const response = await fetch(proxyUrl + encodeURIComponent(url));
+                if(!response.ok) throw new Error("Network validation rejected download.");
+                
+                const htmlText = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, "text/html");
+
+                // Target core readable layouts, fallbacks handle custom templates
+                const targetArea = doc.querySelector('article, main, [class*="article-body"], [class*="story-body"], .entry-content');
+                let processedHTML = "";
+
+                if(targetArea) {
+                    const nodes = targetArea.querySelectorAll('p, h2, h3, blockquote');
+                    nodes.forEach(n => {
+                        if(n.textContent.trim().length > 10) {
+                            processedHTML += `<${n.tagName.toLowerCase()}>${n.innerHTML}</${n.tagName.toLowerCase()}>`;
+                        }
+                    });
+                }
+
+                // Global document sweep fallback parsing rule
+                if(!processedHTML || processedHTML.length < 200) {
+                    processedHTML = "";
+                    const allParagraphs = doc.querySelectorAll('p');
+                    allParagraphs.forEach(p => {
+                        if(p.textContent.trim().length > 35) {
+                            processedHTML += `<p>${p.innerHTML}</p>`;
+                        }
+                    });
+                }
+
+                // Clean malicious tracking iframe, script embeds or hard link pointers
+                processedHTML = processedHTML.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+                
+                if(!processedHTML || processedHTML.length < 50) {
+                    contentContainer.innerHTML = `<p>Failed to isolate direct content text cleanly.</p><a class='clickable-item' href='${url}' target='_blank' style='text-align:center;'>Open in External Browser Node</a>`;
+                } else {
+                    contentContainer.innerHTML = processedHTML;
+                }
+
+            } catch (err) {
+                contentContainer.innerHTML = `<p style='color:red;'>Failed parsing structural layers: ${err.message}</p>`;
+            }
+        }
+
+        // Hardware Mapped Key Intercept Handlers & Dynamic Menu Context Controls
+        function updateSoftkeyLabels() {
+            const lsk = document.getElementById('lsk-label');
+            const rsk = document.getElementById('rsk-label');
+
+            if (state.currentView === "feeds") {
+                lsk.innerText = "Refresh";
+                rsk.innerText = "Settings";
+            } else if (state.currentView === "headlines") {
+                lsk.innerText = "Back";
+                rsk.innerText = "Refresh";
+            } else if (state.currentView === "reader") {
+                lsk.innerText = "Back";
+                rsk.innerText = "External";
+            } else if (state.currentView === "settings") {
+                lsk.innerText = "Back";
+                rsk.innerText = "Save";
+            }
+        }
+
+        function handleLSKClick() {
+            if (state.currentView === "feeds") {
+                renderFeedsList(); // Pull locally cached structures
+            } else if (state.currentView === "headlines") {
+                switchView('feeds');
+            } else if (state.currentView === "reader") {
+                switchView('headlines');
+                // Force return targeting sequence to active feed url context
+                loadFeedHeadlines(state.activeFeedUrl, document.getElementById('headlines-title').innerText);
+            } else if (state.currentView === "settings") {
+                switchView('feeds');
+            }
+        }
+
+        function handleRSKClick() {
+            if (state.currentView === "feeds") {
+                switchView('settings');
+            } else if (state.currentView === "headlines") {
+                loadFeedHeadlines(state.activeFeedUrl, document.getElementById('headlines-title').innerText);
+            } else if (state.currentView === "reader") {
+                window.open(state.activeArticleUrl, '_blank');
+            } else if (state.currentView === "settings") {
+                applySettings();
+                switchView('feeds');
+            }
+        }
+
+        function setupPhysicalKeyBindings() {
+            window.addEventListener('keydown', (e) => {
+                // Feature phone browser platforms bind F1/F2 or SoftLeft/SoftRight to numeric key values
+                if (e.key === 'SoftLeft' || e.key === 'F1' || e.keyCode === 118) {
+                    e.preventDefault();
+                    handleLSKClick();
+                }
+                if (e.key === 'SoftRight' || e.key === 'F2' || e.keyCode === 119) {
+                    e.preventDefault();
+                    handleRSKClick();
+                }
+            });
+        }
     </script>
 </body>
 </html>
