@@ -2,607 +2,661 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=240, initial-scale=1.0, user-scalable=no">
     <title>Cloud Phone RSS</title>
     <style>
-        /* Base Styling & Variables */
+        /* Base Styling for Cloud Phone (240x320) */
         :root {
             --bg: #fafafa;
             --surface: #ffffff;
             --text: #1a1a1a;
             --text-muted: #6e6e73;
-            --accent: #1a1a1a;
-            --focus-outline: #007aff;
-            --focus-bg: #e5f1ff;
+            --focus-bg: #007aff;
+            --focus-text: #ffffff;
             --border: #e5e5ea;
         }
 
-        body.theme-light { --bg: #fafafa; --surface: #ffffff; --text: #1a1a1a; --text-muted: #6e6e73; --border: #e5e5ea; }
-        body.theme-dark { --bg: #000000; --surface: #1c1c1e; --text: #f5f5f7; --text-muted: #98989d; --border: #38383a; --focus-bg: #2c2c2e; --focus-outline: #0a84ff; }
-        body.theme-sepia { --bg: #f4ecd8; --surface: #fdf6e3; --text: #433422; --text-muted: #8f7762; --border: #e4d9c4; --focus-bg: #eae0c4; }
+        body.theme-dark { --bg: #000000; --surface: #111111; --text: #eeeeee; --text-muted: #999999; --border: #333333; --focus-bg: #e33; }
+        body.theme-sepia { --bg: #f4ecd8; --surface: #fdf6e3; --text: #433422; --text-muted: #8f7762; --border: #e4d9c4; --focus-bg: #d09050; }
 
-        body.font-sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body.font-serif { font-family: "Iowan Old Style", "Apple Garamond", Baskerville, "Times New Roman", serif; }
+        body.font-sans { font-family: "Open Sans", -apple-system, sans-serif; }
+        body.font-serif { font-family: "Times New Roman", serif; }
 
-        body.size-small { font-size: 14px; }
-        body.size-medium { font-size: 16px; }
-        body.size-large { font-size: 19px; }
+        body.size-small { font-size: 11px; }
+        body.size-medium { font-size: 12.5px; }
+        body.size-large { font-size: 15px; }
 
-        body {
-            margin: 0; padding: 0 0 40px 0;
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        html, body {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
             background: var(--bg); color: var(--text);
-            box-sizing: border-box; line-height: 1.4;
+            overflow: hidden; /* Lock body scrolling, scroll internal views */
         }
 
-        .view { display: none; padding: 12px; }
+        #app { display: flex; flex-direction: column; height: 100vh; position: relative; }
+
+        /* Header */
+        #header {
+            background: #1a1a1a; color: #fff; text-align: center;
+            padding: 6px 4px; font-weight: bold; font-size: 13px;
+            border-bottom: 1px solid #333; flex-shrink: 0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        /* Views */
+        .view { display: none; flex: 1; overflow-y: auto; padding: 0; scrollbar-width: none; }
+        .view::-webkit-scrollbar { display: none; }
         .view.active { display: block; }
 
-        h1, h2, h3 { font-size: 1.2rem; margin: 0 0 12px 0; text-align: center; font-weight: 600; }
+        /* Forms & Settings inside Views */
+        .padded-view { padding: 8px; }
+        .section-label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); margin: 12px 0 4px 0; border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+
+        /* Cloud Phone Native List Items */
+        .clickable-item, input, select, button {
+            display: flex; align-items: center; width: 100%;
+            padding: 8px 6px; border: none; border-bottom: 1px solid var(--border);
+            background: var(--bg); color: var(--text);
+            font-size: inherit; font-family: inherit;
+            text-align: left; text-decoration: none; cursor: pointer; outline: none; margin: 0;
+            border-radius: 0;
+        }
         
-        .section-label {
-            font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.5px;
-            color: var(--text-muted); margin: 20px 0 8px 0;
-            border-bottom: 1px solid var(--border); padding-bottom: 4px;
-        }
+        /* Form elements specific styling */
+        input, select { border: 1px solid var(--border); padding: 6px; margin-bottom: 6px; background: var(--surface); }
 
-        input, select, button, .clickable-item {
-            font-size: inherit; font-family: inherit; color: inherit;
-            background: var(--surface); border: 1px solid var(--border);
-            padding: 10px; border-radius: 6px; box-sizing: border-box;
-            width: 100%; margin-bottom: 8px; text-align: left;
-            display: block; text-decoration: none; cursor: pointer;
-        }
-
-        button { text-align: center; font-weight: 600; }
-        input:focus, select:focus, button:focus, .clickable-item:focus {
-            outline: 2px solid var(--focus-outline);
+        /* Focus States (Crucial for D-Pad) */
+        .clickable-item:focus, input:focus, select:focus, button:focus {
             background-color: var(--focus-bg);
-            border-color: var(--focus-outline);
+            color: var(--focus-text);
+            border-color: var(--focus-bg);
         }
 
-        /* News Cards with Images */
-        .news-card {
-            background: transparent; border: none; border-bottom: 1px solid var(--border);
-            border-radius: 0; padding: 12px 6px; margin-bottom: 0;
+        /* Compact News Cards */
+        .news-card-content { display: flex; gap: 8px; width: 100%; align-items: flex-start; }
+        .news-thumbnail { width: 38px; height: 38px; border-radius: 3px; object-fit: cover; background: var(--border); flex-shrink: 0; }
+        .news-card-text { flex: 1; overflow: hidden; }
+        
+        .news-title {
+            font-weight: 600; font-size: 12px; line-height: 1.3; margin-bottom: 2px;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;
         }
-        .news-card:last-child { border-bottom: none; }
-        .news-card:focus { border-radius: 6px; }
-
         .news-meta {
-            font-size: 0.75em; text-transform: uppercase; color: var(--text-muted);
-            margin-bottom: 6px; font-family: -apple-system, sans-serif;
+            font-size: 10px; color: var(--text-muted);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         
-        .news-card-content { display: flex; gap: 10px; align-items: flex-start; }
-        .news-card-text { flex: 1; }
-        
-        .news-thumbnail {
-            width: 70px; height: 70px; object-fit: cover;
-            border-radius: 6px; background: var(--border); flex-shrink: 0;
-        }
-
-        .news-title { font-weight: 600; font-size: 1.1em; margin-bottom: 4px; line-height: 1.3; }
-        .news-snippet {
-            font-size: 0.9em; color: var(--text-muted);
-            display: -webkit-box; -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical; overflow: hidden;
-        }
+        /* Dynamic Focus Color Inversion for text inside cards */
+        .clickable-item:focus .news-meta { color: rgba(255,255,255,0.85); }
+        .clickable-item:focus .cache-tick { color: #fff !important; }
 
         /* Full Text Reader */
-        .article-content p { line-height: 1.6; margin-bottom: 1.2em; }
-        .article-content img { max-width: 100%; height: auto; border-radius: 6px; margin: 10px 0; background: var(--surface); }
-        .article-content figure { margin: 0; }
+        #view-reader { padding: 10px 8px; }
+        #reader-title { font-size: 15px; font-weight: bold; margin: 0 0 4px 0; line-height: 1.3; }
+        #reader-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+        .article-content p { line-height: 1.5; margin-bottom: 1em; }
+        .article-content img { max-width: 100%; height: auto; border-radius: 4px; margin: 8px 0; }
+        .external-link-btn { text-align: center; justify-content: center; font-weight: bold; margin-top: 15px; border: 1px solid var(--border); }
 
         /* Hardware Softkey Bar */
         .softkey-bar {
-            position: fixed; bottom: 0; left: 0; right: 0; height: 38px;
-            background: #1a1a1a; color: #ffffff; display: flex;
-            justify-content: space-between; align-items: center;
-            padding: 0 10px; font-family: -apple-system, sans-serif;
-            font-size: 14px; font-weight: 600; z-index: 1000;
+            height: 28px; background: #1a1a1a; color: #ffffff;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 4px; font-family: -apple-system, sans-serif;
+            font-size: 11px; font-weight: 600; flex-shrink: 0; z-index: 1000;
         }
-        .softkey-btn { background: transparent; border: none; color: white; padding: 5px; width: auto; margin: 0; }
-        .softkey-center { font-size: 12px; color: #888888; font-weight: normal; }
+        .softkey-btn { background: transparent; border: none; color: white; padding: 0 4px; margin: 0; width: auto; font-size: 11px; }
+        .softkey-btn:focus { background: transparent; color: #ccc; }
+        .softkey-center { font-size: 11px; color: #aaa; font-weight: bold; text-transform: uppercase; }
 
         /* Sync Indicator */
-        #sync-status {
-            font-size: 0.8em; text-align: center; color: var(--focus-outline);
-            padding: 5px; display: none; font-weight: bold;
-        }
+        #sync-status { font-size: 10px; text-align: center; color: var(--focus-bg); padding: 4px; display: none; font-weight: bold; background: var(--surface); }
+        
+        /* Helpers */
+        .empty-state { text-align: center; padding: 30px 10px; font-size: 12px; color: var(--text-muted); }
     </style>
 </head>
 <body class="theme-light font-sans size-medium">
 
+<div id="app">
+    <div id="header">Latest News</div>
+
     <div id="view-home" class="view active">
-        <h1>Latest News</h1>
         <div id="sync-status">Updating feeds...</div>
         <div id="home-list"></div>
     </div>
 
     <div id="view-options" class="view">
-        <h1>Options</h1>
-        <button class="clickable-item" onclick="forceRefresh()" accesskey="1">1. Force Network Refresh</button>
-        <button class="clickable-item" onclick="switchView('channels')" accesskey="2">2. Browse Channels</button>
+        <button class="clickable-item" onclick="forceRefresh()" accesskey="1">1. Force Refresh</button>
+        <button class="clickable-item" onclick="switchView('channels', 'Channels')" accesskey="2">2. Browse Channels</button>
     </div>
 
     <div id="view-channels" class="view">
-        <h1>My Channels</h1>
         <div id="channels-list"></div>
     </div>
 
     <div id="view-headlines" class="view">
-        <h1 id="headlines-title">Channel</h1>
         <div id="headlines-list"></div>
     </div>
 
     <div id="view-reader" class="view">
-        <h1 id="reader-title" style="text-align: left; font-size: 1.4em;">Loading...</h1>
-        <div class="section-label" id="reader-meta" style="margin-top: 5px;">Please wait</div>
+        <div id="reader-title">Loading...</div>
+        <div id="reader-meta">Please wait</div>
         <div class="article-content" id="reader-content"></div>
     </div>
 
-    <div id="view-settings" class="view">
-        <h1>Settings</h1>
+    <div id="view-settings" class="view padded-view">
         <div class="section-label">Display</div>
         <select id="setting-theme" class="clickable-item" onchange="applySettings()">
             <option value="theme-light">Light Mode</option>
             <option value="theme-dark">Dark Mode</option>
-            <option value="theme-sepia">Sepia Paper</option>
-        </select>
-        <select id="setting-font" class="clickable-item" onchange="applySettings()">
-            <option value="font-sans">Clean Sans-Serif</option>
-            <option value="font-serif">Literary Serif</option>
+            <option value="theme-sepia">Sepia</option>
         </select>
         <select id="setting-size" class="clickable-item" onchange="applySettings()">
             <option value="size-small">Small Text</option>
-            <option value="size-medium">Standard Text</option>
+            <option value="size-medium">Medium Text</option>
             <option value="size-large">Large Text</option>
         </select>
         
-        <div class="section-label">Feeds</div>
-        <div id="settings-feed-toggles"></div>
-        <div class="section-label">Add Custom</div>
-        <input type="text" id="custom-name" placeholder="Name (e.g., The Verge)">
-        <input type="url" id="custom-url" placeholder="https://example.com/rss">
-        <button onclick="addNewFeed()">+ Add Feed</button>
-        <button onclick="resetApp()" style="background:#ff3b30; color:white; border:none; margin-top:25px;">Wipe Data & Reset</button>
+        <div class="section-label">Toggle Feeds</div>
+        <div id="settings-feed-toggles" style="margin-bottom: 10px;"></div>
+        
+        <div class="section-label">System</div>
+        <button class="clickable-item" onclick="resetApp()" style="color:#ff3b30; font-weight:bold; justify-content:center;">Wipe Cache & Reset</button>
     </div>
 
     <div class="softkey-bar">
         <button class="softkey-btn" id="lsk-label" onclick="handleLSKClick()">Options</button>
-        <div class="softkey-center">Select</div>
+        <div class="softkey-center" id="csk-label">Select</div>
         <button class="softkey-btn" id="rsk-label" onclick="handleRSKClick()">Settings</button>
     </div>
+</div>
 
-    <script>
-        const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
-        const CACHE_PREFIX = 'rss_article_';
-        
-        const proxyList = [
-            "https://api.allorigins.win/raw?url=",
-            "https://api.codetabs.com/v1/proxy?quest=",
-            "https://corsproxy.io/?"
-        ];
-        
-        const defaultFeeds = [
-            { id: "bbc", name: "BBC News", url: "https://feeds.bbci.co.uk/news/rss.xml", enabled: true },
-            { id: "nyt", name: "New York Times", url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", enabled: true },
-            { id: "palo", name: "Prothom Alo", url: "https://www.prothomalo.com/feed/", enabled: true },
-            { id: "star", name: "The Daily Star", url: "https://www.thedailystar.net/frontpage/rss.xml", enabled: true }
-        ];
+<script>
+    const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+    const CACHE_PREFIX = 'rss_article_';
+    
+    const proxyList = [
+        "https://api.allorigins.win/raw?url=",
+        "https://api.codetabs.com/v1/proxy?quest=",
+        "https://corsproxy.io/?"
+    ];
+    
+    const defaultFeeds = [
+        { id: "bbc", name: "BBC News", url: "https://feeds.bbci.co.uk/news/rss.xml", enabled: true },
+        { id: "nyt", name: "New York Times", url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", enabled: true },
+        { id: "palo", name: "Prothom Alo", url: "https://www.prothomalo.com/feed/", enabled: true },
+        { id: "star", name: "The Daily Star", url: "https://www.thedailystar.net/frontpage/rss.xml", enabled: true }
+    ];
 
-        let state = {
-            feeds: [], currentView: "home", activeFeedUrl: "", activeArticleUrl: "",
-            settings: { theme: "theme-light", font: "font-sans", size: "size-medium" }
-        };
+    let state = {
+        feeds: [], currentView: "home", activeArticleUrl: "", currentChannelName: "",
+        settings: { theme: "theme-light", font: "font-sans", size: "size-medium" }
+    };
 
-        let prefetchQueue = [];
-        let isPrefetching = false;
+    let prefetchQueue = [];
+    let isPrefetching = false;
 
-        window.addEventListener('DOMContentLoaded', () => {
-            cleanupCache(); // Clean old articles on startup
-            loadSavedData();
-            setupPhysicalKeyBindings();
-            loadMixedFeed(); 
-        });
+    window.addEventListener('DOMContentLoaded', () => {
+        cleanupCache();
+        loadSavedData();
+        setupPhysicalKeyBindings();
+        loadMixedFeed(); 
+    });
 
-        // --- STORAGE & CACHE MANAGEMENT ---
-        function safeSetItem(key, value) {
-            try { localStorage.setItem(key, value); }
-            catch (e) {
-                if (e.name === 'QuotaExceededError') {
-                    cleanupCache(true); // Aggressive cleanup if full
-                    try { localStorage.setItem(key, value); } catch (err) {}
-                }
+    // --- CACHE ---
+    function safeSetItem(key, value) {
+        try { localStorage.setItem(key, value); }
+        catch (e) {
+            if (e.name === 'QuotaExceededError') {
+                cleanupCache(true); 
+                try { localStorage.setItem(key, value); } catch (err) {}
             }
         }
+    }
 
-        function cleanupCache(aggressive = false) {
-            const now = Date.now();
-            const keysToRemove = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && key.startsWith(CACHE_PREFIX)) {
-                    try {
-                        const item = JSON.parse(localStorage.getItem(key));
-                        const limit = aggressive ? (24 * 60 * 60 * 1000) : THREE_DAYS_MS;
-                        if (now - item.timestamp > limit) keysToRemove.push(key);
-                    } catch(e) { keysToRemove.push(key); }
-                }
-            }
-            keysToRemove.forEach(k => localStorage.removeItem(k));
-        }
-
-        function loadSavedData() {
-            const savedFeeds = localStorage.getItem('rss_feeds_cfg');
-            const savedSettings = localStorage.getItem('rss_settings');
-            state.feeds = savedFeeds ? JSON.parse(savedFeeds) : JSON.parse(JSON.stringify(defaultFeeds));
-            if(savedSettings) state.settings = JSON.parse(savedSettings);
-            applySettingsToDOM();
-        }
-
-        // --- NETWORK ENGINE ---
-        async function fetchWithFallback(targetUrl) {
-            let lastError;
-            for (let i = 0; i < proxyList.length; i++) {
+    function cleanupCache(aggressive = false) {
+        const now = Date.now();
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith(CACHE_PREFIX)) {
                 try {
-                    const res = await fetch(proxyList[i] + encodeURIComponent(targetUrl));
-                    if (res.ok) return await res.text();
-                } catch (err) { lastError = err; }
-            }
-            throw new Error(lastError ? lastError.message : "Network/Proxy block.");
-        }
-
-        // --- FEED RENDERING & SYNCING ---
-        function forceRefresh() {
-            localStorage.removeItem('rss_feed_cache');
-            loadMixedFeed();
-        }
-
-        async function loadMixedFeed() {
-            switchView('home');
-            const container = document.getElementById('home-list');
-            const syncStatus = document.getElementById('sync-status');
-            
-            let cachedFeeds = JSON.parse(localStorage.getItem('rss_feed_cache') || '[]');
-            const now = Date.now();
-            cachedFeeds = cachedFeeds.filter(a => (now - a.timestamp) < THREE_DAYS_MS);
-            
-            if (cachedFeeds.length > 0) {
-                renderArticles(cachedFeeds, container);
-                syncStatus.style.display = 'block'; 
-            } else {
-                container.innerHTML = "<div style='text-align:center; padding:30px 10px;'>Syncing latest news...</div>";
-            }
-
-            const enabledFeeds = state.feeds.filter(f => f.enabled !== false);
-            if(enabledFeeds.length === 0) {
-                container.innerHTML = "<div style='text-align:center; padding:20px;'>All feeds disabled.</div>";
-                syncStatus.style.display = 'none'; return;
-            }
-
-            let newArticles = [];
-            await Promise.allSettled(enabledFeeds.map(async feed => {
-                try {
-                    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`);
-                    const data = await res.json();
-                    if (data.status === 'ok') {
-                        data.items.forEach(item => {
-                            newArticles.push({
-                                title: item.title, link: item.link, source: feed.name,
-                                desc: (item.description || "").replace(/<\/?[^>]+(>|$)/g, "").trim(),
-                                timestamp: new Date(item.pubDate).getTime(),
-                                thumbnail: item.thumbnail || (item.enclosure && item.enclosure.link) || null
-                            });
-                        });
-                        return;
-                    }
-                } catch(e) {}
-
-                try {
-                    const text = await fetchWithFallback(feed.url);
-                    const doc = new DOMParser().parseFromString(text, "text/xml");
-                    doc.querySelectorAll("item, entry").forEach(item => {
-                        const title = item.querySelector("title")?.textContent || "Untitled";
-                        const linkNode = item.querySelector("link");
-                        const link = linkNode ? (linkNode.textContent || linkNode.getAttribute("href")) : "";
-                        const dateText = item.querySelector("pubDate, updated, published")?.textContent;
-                        let thumb = item.querySelector("thumbnail, content, image")?.getAttribute("url") || null;
-                        
-                        newArticles.push({
-                            title, link, source: feed.name, thumbnail: thumb,
-                            desc: (item.querySelector("description, summary")?.textContent || "").replace(/<\/?[^>]+(>|$)/g, "").trim(),
-                            timestamp: dateText ? new Date(dateText).getTime() : Date.now()
-                        });
-                    });
-                } catch(e) {}
-            }));
-            
-            syncStatus.style.display = 'none';
-
-            if (newArticles.length > 0) {
-                const merged = [...newArticles, ...cachedFeeds];
-                const unique = Array.from(new Map(merged.map(item => [item.link, item])).values());
-                unique.sort((a, b) => b.timestamp - a.timestamp);
-                
-                const finalFeeds = unique.slice(0, 60);
-                safeSetItem('rss_feed_cache', JSON.stringify(finalFeeds));
-                renderArticles(finalFeeds, container);
-                
-                startPrefetching(finalFeeds.slice(0, 15));
-            } else if (cachedFeeds.length === 0) {
-                 container.innerHTML = "<div style='text-align:center; padding:20px; color:red;'>Offline or Feeds blocked.</div>";
+                    const item = JSON.parse(localStorage.getItem(key));
+                    const limit = aggressive ? (24 * 60 * 60 * 1000) : THREE_DAYS_MS;
+                    if (now - item.timestamp > limit) keysToRemove.push(key);
+                } catch(e) { keysToRemove.push(key); }
             }
         }
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+    }
 
-        function renderArticles(articles, container) {
-            container.innerHTML = "";
-            articles.forEach(article => {
-                const timeStr = formatTimeAgo(article.timestamp);
-                const metaText = timeStr ? `${article.source} • ${timeStr}` : article.source;
-                const thumbHtml = article.thumbnail ? `<img src="${article.thumbnail}" class="news-thumbnail" loading="lazy">` : '';
-                
-                // Check local cache directly to see if it should show tick right away
-                const isLoaded = !!localStorage.getItem(CACHE_PREFIX + article.link);
-                const tickHtml = `<span class="cache-tick" data-url="${encodeURIComponent(article.link)}" style="color:var(--focus-outline); font-weight:bold; margin-left:4px; display:${isLoaded ? 'inline' : 'none'};">✓</span>`;
-                
-                const card = document.createElement('div');
-                card.className = "news-card clickable-item";
-                card.tabIndex = 0;
-                card.innerHTML = `
-                    <div class="news-meta">${metaText}${tickHtml}</div>
-                    <div class="news-card-content">
-                        <div class="news-card-text">
-                            <div class="news-title">${article.title}</div>
-                            <div class="news-snippet">${article.desc.substring(0, 90)}...</div>
-                        </div>
-                        ${thumbHtml}
-                    </div>
-                `;
-                card.onclick = () => loadFullArticle(article.link, article.title, metaText, article.desc);
-                card.onkeydown = (e) => { if(e.key === 'Enter') loadFullArticle(article.link, article.title, metaText, article.desc); };
-                container.appendChild(card);
-            });
-        }
+    function loadSavedData() {
+        const savedFeeds = localStorage.getItem('rss_feeds_cfg');
+        const savedSettings = localStorage.getItem('rss_settings');
+        state.feeds = savedFeeds ? JSON.parse(savedFeeds) : JSON.parse(JSON.stringify(defaultFeeds));
+        if(savedSettings) state.settings = JSON.parse(savedSettings);
+        applySettingsToDOM();
+    }
 
-        // --- BACKGROUND PRE-FETCHING ---
-        function startPrefetching(articles) {
-            const urlsToFetch = articles
-                .filter(a => a.link && !localStorage.getItem(CACHE_PREFIX + a.link))
-                .map(a => a.link);
-            
-            prefetchQueue = [...new Set([...prefetchQueue, ...urlsToFetch])];
-            if (!isPrefetching) processPrefetchQueue();
-        }
-
-        async function processPrefetchQueue() {
-            if (prefetchQueue.length === 0) { isPrefetching = false; return; }
-            isPrefetching = true;
-            
-            const url = prefetchQueue.shift();
-            if(!localStorage.getItem(CACHE_PREFIX + url)) {
-                try {
-                    let html = await extractArticleHtml(url);
-                    let isFallback = false;
-                    
-                    // Fallback injection if layout rules return low content structural extraction
-                    if (!html || html.length < 200) {
-                        const cachedFeeds = JSON.parse(localStorage.getItem('rss_feed_cache') || '[]');
-                        const match = cachedFeeds.find(a => a.link === url);
-                        const fallbackSnippet = match ? match.desc : "No cached summary description available.";
-                        html = `<p style="color:var(--text-muted);"><em>Content extraction limited by site rules. Summary below:</em></p>
-                                <blockquote style="border-left:3px solid var(--border); padding-left:12px; margin:12px 0; color:var(--text-muted); font-style:italic;">${fallbackSnippet}</blockquote>`;
-                        isFallback = true;
-                    }
-                    
-                    safeSetItem(CACHE_PREFIX + url, JSON.stringify({ content: html, timestamp: Date.now(), isFallback: isFallback }));
-                    
-                    // Dynamic live DOM tick mark target update
-                    const tickEl = document.querySelector(`.cache-tick[data-url="${encodeURIComponent(url)}"]`);
-                    if(tickEl) tickEl.style.display = 'inline';
-                    
-                } catch (e) {} 
-            }
-            
-            setTimeout(processPrefetchQueue, 1500); 
-        }
-
-        // --- ARTICLE CONTENT EXTRACTION ---
-        async function extractArticleHtml(url) {
+    // --- NETWORK ---
+    async function fetchWithFallback(targetUrl) {
+        let lastError;
+        for (let i = 0; i < proxyList.length; i++) {
             try {
-                const htmlText = await fetchWithFallback(url);
-                const doc = new DOMParser().parseFromString(htmlText, "text/html");
-                const targetArea = doc.querySelector('article, main, .article-body, .story-body, .entry-content, [itemprop="articleBody"]');
-                
-                let parsedHtml = "";
-                const root = targetArea || doc.body;
-
-                root.querySelectorAll('p, h2, h3, img').forEach(n => {
-                    if (n.tagName === 'IMG') {
-                        let src = n.getAttribute('src') || n.getAttribute('data-src');
-                        if (src && !src.startsWith('data:') && !src.includes('.svg')) {
-                            if (src.startsWith('/')) {
-                                try { src = new URL(src, url).href; } catch(e){}
-                            }
-                            parsedHtml += `<img src="${src}" loading="lazy" />`;
-                        }
-                    } else if (n.textContent.trim().length > 25) {
-                        parsedHtml += `<${n.tagName.toLowerCase()}>${n.innerHTML}</${n.tagName.toLowerCase()}>`;
-                    }
-                });
-
-                parsedHtml = parsedHtml.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
-                parsedHtml = parsedHtml.replace(/style="[^"]*"/gi, "");
-                parsedHtml = parsedHtml.replace(/class="[^"]*"/gi, "");
-                
-                return parsedHtml;
-            } catch(e) {
-                return "";
-            }
+                const res = await fetch(proxyList[i] + encodeURIComponent(targetUrl));
+                if (res.ok) return await res.text();
+            } catch (err) { lastError = err; }
         }
+        throw new Error("Network block.");
+    }
 
-        async function loadFullArticle(url, title, meta, fallbackDesc = "") {
-            state.activeArticleUrl = url;
-            switchView('reader');
-            
-            document.getElementById('reader-title').innerText = title;
-            document.getElementById('reader-meta').innerText = meta || 'Article View';
-            const content = document.getElementById('reader-content');
-            
-            // Helper to clean append actionable D-pad browser fallback links
-            const appendExternalLink = (targetContainer) => {
-                if(!targetContainer.querySelector('.external-link-btn')) {
-                    const btn = document.createElement('button');
-                    btn.className = 'clickable-item external-link-btn';
-                    btn.style.marginTop = '20px';
-                    btn.innerText = 'Open Full Article in Browser';
-                    btn.onclick = () => window.open(url, '_blank');
-                    targetContainer.appendChild(btn);
-                }
-            };
+    // --- VIEWS & NAVIGATION ---
+    function setHeader(title) {
+        document.getElementById('header').innerText = title;
+    }
 
-            // 1. Check local cache first
-            const cached = localStorage.getItem(CACHE_PREFIX + url);
-            if (cached) {
-                const data = JSON.parse(cached);
-                content.innerHTML = data.content;
-                if (data.isFallback || data.content.includes("Content extraction limited")) {
-                    appendExternalLink(content);
-                }
-                return;
-            }
+    function switchView(viewName, titleOverride = null) {
+        state.currentView = viewName;
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(`view-${viewName}`).classList.add('active');
+        
+        // Handle UI changes per view
+        if(viewName === 'home') setHeader('Latest News');
+        else if(viewName === 'options') setHeader('Options');
+        else if(viewName === 'settings') { setHeader('Settings'); renderSettingsFeedToggles(); }
+        else if(viewName === 'channels') { setHeader('Channels'); renderChannelsList(); }
+        else if(viewName === 'headlines') setHeader(titleOverride || state.currentChannelName);
+        else if(viewName === 'reader') setHeader('Article');
 
-            // 2. Fetch live if not cached or background worker skipped it
-            content.innerHTML = "<div style='text-align:center; padding:40px 10px;'>Downloading full text & images...</div>";
-            try {
-                let html = await extractArticleHtml(url);
-                let isFallback = false;
-                
-                if (!html || html.length < 200) {
-                    html = `<p style="color:var(--text-muted);"><em>Content extraction limited by site rules. Summary below:</em></p>
-                            <blockquote style="border-left:3px solid var(--border); padding-left:12px; margin:12px 0; color:var(--text-muted); font-style:italic;">${fallbackDesc || "No summary details found."}</blockquote>`;
-                    isFallback = true;
-                }
-                
-                content.innerHTML = html;
-                if(isFallback) appendExternalLink(content);
-                
-                safeSetItem(CACHE_PREFIX + url, JSON.stringify({ content: html, timestamp: Date.now(), isFallback: isFallback }));
-                
-                const tickEl = document.querySelector(`.cache-tick[data-url="${encodeURIComponent(url)}"]`);
-                if(tickEl) tickEl.style.display = 'inline';
-                
-            } catch (err) {
-                content.innerHTML = `<p style="color:var(--text-muted);"><em>Extraction offline. RSS summary snapshot:</em></p>
-                                     <blockquote style="border-left:3px solid var(--border); padding-left:12px; margin:12px 0; color:var(--text-muted); font-style:italic;">${fallbackDesc || "No summary details found."}</blockquote>`;
-                appendExternalLink(content);
-            }
-        }
-
-        // --- UTILS & SETTINGS ---
-        function formatTimeAgo(timestamp) {
-            if(!timestamp) return "";
-            const seconds = Math.floor((Date.now() - timestamp) / 1000);
-            let interval = seconds / 3600;
-            if (interval >= 1 && interval < 24) return Math.floor(interval) + "h ago";
-            interval = seconds / 60;
-            if (interval >= 1 && interval < 60) return Math.floor(interval) + "m ago";
-            if (seconds < 60) return "Just now";
-            return new Date(timestamp).toLocaleDateString();
-        }
-
-        function switchView(viewName) {
-            state.currentView = viewName;
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(`view-${viewName}`).classList.add('active');
-            
+        // Focus first clickable item
+        setTimeout(() => {
             const focusTarget = document.getElementById(`view-${viewName}`).querySelector('button, input, select, .clickable-item');
             if(focusTarget) focusTarget.focus();
+        }, 50);
+        
+        updateSoftkeyLabels();
+    }
+
+    // --- CHANNEL BROWSING (THE MISSING LOGIC) ---
+    function renderChannelsList() {
+        const container = document.getElementById('channels-list');
+        container.innerHTML = "";
+        
+        if (state.feeds.length === 0) {
+            container.innerHTML = "<div class='empty-state'>No channels configured.</div>";
+            return;
+        }
+
+        state.feeds.forEach(feed => {
+            const btn = document.createElement('button');
+            btn.className = "clickable-item";
+            btn.innerHTML = `
+                <div style="flex:1; font-weight:600;">${feed.name}</div>
+                <div style="font-size:10px; color:var(--text-muted);">${feed.enabled !== false ? 'ON' : 'OFF'}</div>
+            `;
+            btn.onclick = () => openChannelHeadlines(feed);
+            container.appendChild(btn);
+        });
+    }
+
+    function openChannelHeadlines(feed) {
+        state.currentChannelName = feed.name;
+        const container = document.getElementById('headlines-list');
+        const cachedFeeds = JSON.parse(localStorage.getItem('rss_feed_cache') || '[]');
+        
+        // Filter local cache just for this publisher
+        const channelArticles = cachedFeeds.filter(a => a.source === feed.name);
+        
+        if (channelArticles.length > 0) {
+            renderArticles(channelArticles, container, true);
+        } else {
+            container.innerHTML = "<div class='empty-state'>No cached articles for this channel. Force Refresh from options.</div>";
+        }
+        
+        switchView('headlines', feed.name);
+    }
+
+    // --- FEED LOADING ---
+    function forceRefresh() {
+        localStorage.removeItem('rss_feed_cache');
+        loadMixedFeed();
+    }
+
+    async function loadMixedFeed() {
+        switchView('home');
+        const container = document.getElementById('home-list');
+        const syncStatus = document.getElementById('sync-status');
+        
+        let cachedFeeds = JSON.parse(localStorage.getItem('rss_feed_cache') || '[]');
+        const now = Date.now();
+        cachedFeeds = cachedFeeds.filter(a => (now - a.timestamp) < THREE_DAYS_MS);
+        
+        if (cachedFeeds.length > 0) {
+            renderArticles(cachedFeeds, container, false);
+            syncStatus.style.display = 'block'; 
+        } else {
+            container.innerHTML = "<div class='empty-state'>Syncing latest news...</div>";
+        }
+
+        const enabledFeeds = state.feeds.filter(f => f.enabled !== false);
+        if(enabledFeeds.length === 0) {
+            container.innerHTML = "<div class='empty-state'>All feeds disabled. Go to Settings.</div>";
+            syncStatus.style.display = 'none'; return;
+        }
+
+        let newArticles = [];
+        await Promise.allSettled(enabledFeeds.map(async feed => {
+            try {
+                const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`);
+                const data = await res.json();
+                if (data.status === 'ok') {
+                    data.items.forEach(item => {
+                        newArticles.push({
+                            title: item.title, link: item.link, source: feed.name,
+                            desc: (item.description || "").replace(/<\/?[^>]+(>|$)/g, "").trim(),
+                            timestamp: new Date(item.pubDate).getTime(),
+                            thumbnail: item.thumbnail || (item.enclosure && item.enclosure.link) || null
+                        });
+                    });
+                    return;
+                }
+            } catch(e) {}
+
+            try {
+                const text = await fetchWithFallback(feed.url);
+                const doc = new DOMParser().parseFromString(text, "text/xml");
+                doc.querySelectorAll("item, entry").forEach(item => {
+                    const title = item.querySelector("title")?.textContent || "Untitled";
+                    const linkNode = item.querySelector("link");
+                    const link = linkNode ? (linkNode.textContent || linkNode.getAttribute("href")) : "";
+                    const dateText = item.querySelector("pubDate, updated, published")?.textContent;
+                    let thumb = item.querySelector("thumbnail, content, image")?.getAttribute("url") || null;
+                    
+                    newArticles.push({
+                        title, link, source: feed.name, thumbnail: thumb,
+                        desc: (item.querySelector("description, summary")?.textContent || "").replace(/<\/?[^>]+(>|$)/g, "").trim(),
+                        timestamp: dateText ? new Date(dateText).getTime() : Date.now()
+                    });
+                });
+            } catch(e) {}
+        }));
+        
+        syncStatus.style.display = 'none';
+
+        if (newArticles.length > 0) {
+            const merged = [...newArticles, ...cachedFeeds];
+            const unique = Array.from(new Map(merged.map(item => [item.link, item])).values());
+            unique.sort((a, b) => b.timestamp - a.timestamp);
             
-            if(viewName === 'settings') renderSettingsFeedToggles();
-            if(viewName === 'channels') renderChannelsList();
+            const finalFeeds = unique.slice(0, 60);
+            safeSetItem('rss_feed_cache', JSON.stringify(finalFeeds));
             
-            updateSoftkeyLabels();
+            // Only update DOM if we are still on home screen
+            if (state.currentView === 'home') renderArticles(finalFeeds, container, false);
+            
+            startPrefetching(finalFeeds.slice(0, 15));
+        } else if (cachedFeeds.length === 0) {
+             container.innerHTML = "<div class='empty-state' style='color:#e33;'>Offline or Feeds blocked.</div>";
         }
+    }
 
-        function applySettings() {
-            state.settings.theme = document.getElementById('setting-theme').value;
-            state.settings.font = document.getElementById('setting-font').value;
-            state.settings.size = document.getElementById('setting-size').value;
-            localStorage.setItem('rss_settings', JSON.stringify(state.settings));
-            applySettingsToDOM();
-        }
+    // --- CLOUD PHONE COMPACT ARTICLE CARDS ---
+    function renderArticles(articles, container, hideSource = false) {
+        container.innerHTML = "";
+        articles.forEach(article => {
+            const timeStr = formatTimeAgo(article.timestamp);
+            
+            // If in Channel view, don't repeat the source name
+            const metaText = hideSource ? timeStr : (timeStr ? `${article.source} • ${timeStr}` : article.source);
+            
+            const thumbHtml = article.thumbnail 
+                ? `<img src="${article.thumbnail}" class="news-thumbnail" loading="lazy">` 
+                : `<div class="news-thumbnail" style="display:flex;align-items:center;justify-content:center;font-size:10px;color:#aaa;">TXT</div>`;
+            
+            const isLoaded = !!localStorage.getItem(CACHE_PREFIX + article.link);
+            const tickHtml = `<span class="cache-tick" data-url="${encodeURIComponent(article.link)}" style="color:var(--focus-bg); font-weight:bold; margin-left:4px; display:${isLoaded ? 'inline' : 'none'};">✓</span>`;
+            
+            const card = document.createElement('button');
+            card.className = "clickable-item";
+            card.innerHTML = `
+                <div class="news-card-content">
+                    ${thumbHtml}
+                    <div class="news-card-text">
+                        <div class="news-title">${article.title}</div>
+                        <div class="news-meta">${metaText}${tickHtml}</div>
+                    </div>
+                </div>
+            `;
+            card.onclick = () => loadFullArticle(article.link, article.title, metaText, article.desc);
+            container.appendChild(card);
+        });
+    }
 
-        function applySettingsToDOM() {
-            document.getElementById('setting-theme').value = state.settings.theme;
-            document.getElementById('setting-font').value = state.settings.font;
-            document.getElementById('setting-size').value = state.settings.size;
-            document.body.className = `${state.settings.theme} ${state.settings.font} ${state.settings.size}`;
-        }
+    // --- PREFETCH & EXTRACTION ---
+    function startPrefetching(articles) {
+        const urlsToFetch = articles
+            .filter(a => a.link && !localStorage.getItem(CACHE_PREFIX + a.link))
+            .map(a => a.link);
+        prefetchQueue = [...new Set([...prefetchQueue, ...urlsToFetch])];
+        if (!isPrefetching) processPrefetchQueue();
+    }
 
-        function saveFeeds() { localStorage.setItem('rss_feeds_cfg', JSON.stringify(state.feeds)); }
-
-        function renderSettingsFeedToggles() {
-            const container = document.getElementById('settings-feed-toggles');
-            container.innerHTML = "";
-            state.feeds.forEach((feed, i) => {
-                const btn = document.createElement('button');
-                btn.className = "clickable-item toggle-btn";
-                btn.innerHTML = `<span style="display:flex; justify-content:space-between; width:100%;"><span>${feed.name}</span> <span style="color:var(--focus-outline)">${feed.enabled !== false ? '[ON]' : '[OFF]'}</span></span>`;
-                btn.onclick = () => {
-                    state.feeds[i].enabled = !(feed.enabled !== false);
-                    saveFeeds(); renderSettingsFeedToggles(); forceRefresh();
-                };
-                container.appendChild(btn);
-            });
-        }
-
-        function resetApp() {
-            if(confirm("Factory reset? All saved feeds and cache will be deleted.")) {
-                localStorage.clear();
-                window.location.reload();
-            }
-        }
-
-        // --- HARDWARE NAVIGATION ---
-        function updateSoftkeyLabels() {
-            const lsk = document.getElementById('lsk-label'), rsk = document.getElementById('rsk-label');
-            const map = {
-                "home": ["Options", "Settings"], "options": ["Select", "Back"],
-                "channels": ["Select", "Back"], "headlines": ["Select", "Back"],
-                "reader": ["External", "Back"], "settings": ["Save", "Back"]
-            };
-            lsk.innerText = map[state.currentView][0]; rsk.innerText = map[state.currentView][1];
-        }
-
-        function handleLSKClick() {
-            if (state.currentView === "home") switchView('options');
-            else if (["options", "channels", "headlines"].includes(state.currentView)) {
-                const act = document.activeElement;
-                if(act && (act.tagName === 'BUTTON' || act.classList.contains('clickable-item'))) act.click();
-            }
-            else if (state.currentView === "reader") window.open(state.activeArticleUrl, '_blank');
-            else if (state.currentView === "settings") { applySettings(); switchView('home'); }
-        }
-
-        function handleRSKClick() {
-            if (state.currentView === "home") switchView('settings');
-            else if (["options", "channels", "settings"].includes(state.currentView)) switchView('home');
-            else if (state.currentView === "headlines") switchView('channels');
-            else if (state.currentView === "reader") switchView('home');
-        }
-
-        function setupPhysicalKeyBindings() {
-            window.addEventListener('keydown', (e) => {
-                if (['SoftLeft', 'F1'].includes(e.key) || e.keyCode === 118) { e.preventDefault(); handleLSKClick(); }
-                if (['SoftRight', 'F2'].includes(e.key) || e.keyCode === 119) { e.preventDefault(); handleRSKClick(); }
+    async function processPrefetchQueue() {
+        if (prefetchQueue.length === 0) { isPrefetching = false; return; }
+        isPrefetching = true;
+        const url = prefetchQueue.shift();
+        
+        if(!localStorage.getItem(CACHE_PREFIX + url)) {
+            try {
+                let html = await extractArticleHtml(url);
+                let isFb = false;
+                if (!html || html.length < 200) {
+                    const cachedFeeds = JSON.parse(localStorage.getItem('rss_feed_cache') || '[]');
+                    const match = cachedFeeds.find(a => a.link === url);
+                    html = `<p><em>Extraction limited. Summary:</em></p><blockquote style="border-left:2px solid var(--border); padding-left:8px; color:var(--text-muted);">${match ? match.desc : "No details."}</blockquote>`;
+                    isFb = true;
+                }
+                safeSetItem(CACHE_PREFIX + url, JSON.stringify({ content: html, timestamp: Date.now(), isFallback: isFb }));
                 
-                if (state.currentView === 'home' || state.currentView === 'options') {
-                    if (e.key === '1') { e.preventDefault(); forceRefresh(); }
-                    if (e.key === '2') { e.preventDefault(); switchView('channels'); }
+                const ticks = document.querySelectorAll(`.cache-tick[data-url="${encodeURIComponent(url)}"]`);
+                ticks.forEach(t => t.style.display = 'inline');
+            } catch (e) {} 
+        }
+        setTimeout(processPrefetchQueue, 1500); 
+    }
+
+    async function extractArticleHtml(url) {
+        try {
+            const htmlText = await fetchWithFallback(url);
+            const doc = new DOMParser().parseFromString(htmlText, "text/html");
+            const targetArea = doc.querySelector('article, main, .article-body, .story-body, [itemprop="articleBody"]');
+            
+            let parsedHtml = "";
+            const root = targetArea || doc.body;
+
+            root.querySelectorAll('p, h2, h3, img').forEach(n => {
+                if (n.tagName === 'IMG') {
+                    let src = n.getAttribute('src') || n.getAttribute('data-src');
+                    if (src && !src.startsWith('data:') && !src.includes('.svg')) {
+                        if (src.startsWith('/')) { try { src = new URL(src, url).href; } catch(e){} }
+                        parsedHtml += `<img src="${src}" loading="lazy" />`;
+                    }
+                } else if (n.textContent.trim().length > 25) {
+                    parsedHtml += `<${n.tagName.toLowerCase()}>${n.innerHTML}</${n.tagName.toLowerCase()}>`;
                 }
             });
+            parsedHtml = parsedHtml.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+            parsedHtml = parsedHtml.replace(/style="[^"]*"/gi, "").replace(/class="[^"]*"/gi, "");
+            return parsedHtml;
+        } catch(e) { return ""; }
+    }
+
+    async function loadFullArticle(url, title, meta, fallbackDesc = "") {
+        state.activeArticleUrl = url;
+        switchView('reader');
+        
+        document.getElementById('reader-title').innerText = title;
+        document.getElementById('reader-meta').innerText = meta || 'Article View';
+        const content = document.getElementById('reader-content');
+        
+        const appendExternalLink = (targetContainer) => {
+            if(!targetContainer.querySelector('.external-link-btn')) {
+                const btn = document.createElement('button');
+                btn.className = 'clickable-item external-link-btn';
+                btn.innerText = 'Open in Native Browser';
+                btn.onclick = () => window.open(url, '_blank');
+                targetContainer.appendChild(btn);
+            }
+        };
+
+        const cached = localStorage.getItem(CACHE_PREFIX + url);
+        if (cached) {
+            const data = JSON.parse(cached);
+            content.innerHTML = data.content;
+            if (data.isFallback || data.content.includes("Extraction limited")) appendExternalLink(content);
+            return;
         }
-    </script>
+
+        content.innerHTML = "<div class='empty-state'>Downloading text & images...</div>";
+        try {
+            let html = await extractArticleHtml(url);
+            let isFb = false;
+            if (!html || html.length < 200) {
+                html = `<p><em>Extraction limited. Summary:</em></p><blockquote style="border-left:2px solid var(--border); padding-left:8px; color:var(--text-muted);">${fallbackDesc || "No details."}</blockquote>`;
+                isFb = true;
+            }
+            content.innerHTML = html;
+            if(isFb) appendExternalLink(content);
+            
+            safeSetItem(CACHE_PREFIX + url, JSON.stringify({ content: html, timestamp: Date.now(), isFallback: isFb }));
+            document.querySelectorAll(`.cache-tick[data-url="${encodeURIComponent(url)}"]`).forEach(t => t.style.display = 'inline');
+        } catch (err) {
+            content.innerHTML = `<p><em>Offline. Summary:</em></p><blockquote style="border-left:2px solid var(--border); padding-left:8px; color:var(--text-muted);">${fallbackDesc || "No details."}</blockquote>`;
+            appendExternalLink(content);
+        }
+    }
+
+    // --- SETTINGS & HELPERS ---
+    function formatTimeAgo(timestamp) {
+        if(!timestamp) return "";
+        const seconds = Math.floor((Date.now() - timestamp) / 1000);
+        let interval = seconds / 3600;
+        if (interval >= 1 && interval < 24) return Math.floor(interval) + "h ago";
+        interval = seconds / 60;
+        if (interval >= 1 && interval < 60) return Math.floor(interval) + "m ago";
+        if (seconds < 60) return "Just now";
+        return new Date(timestamp).toLocaleDateString(undefined, {month:'short', day:'numeric'});
+    }
+
+    function applySettings() {
+        state.settings.theme = document.getElementById('setting-theme').value;
+        state.settings.size = document.getElementById('setting-size').value;
+        localStorage.setItem('rss_settings', JSON.stringify(state.settings));
+        applySettingsToDOM();
+    }
+
+    function applySettingsToDOM() {
+        document.getElementById('setting-theme').value = state.settings.theme;
+        document.getElementById('setting-size').value = state.settings.size;
+        document.body.className = `${state.settings.theme} ${state.settings.font} ${state.settings.size}`;
+    }
+
+    function renderSettingsFeedToggles() {
+        const container = document.getElementById('settings-feed-toggles');
+        container.innerHTML = "";
+        state.feeds.forEach((feed, i) => {
+            const btn = document.createElement('button');
+            btn.className = "clickable-item";
+            btn.innerHTML = `<div style="flex:1;">${feed.name}</div><div style="font-size:10px; font-weight:bold; color:var(--focus-bg);">${feed.enabled !== false ? '[ON]' : '[OFF]'}</div>`;
+            btn.onclick = () => {
+                state.feeds[i].enabled = !(feed.enabled !== false);
+                localStorage.setItem('rss_feeds_cfg', JSON.stringify(state.feeds));
+                renderSettingsFeedToggles(); forceRefresh();
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    function resetApp() {
+        if(confirm("Factory reset? All saved feeds and cache will be deleted.")) {
+            localStorage.clear();
+            window.location.reload();
+        }
+    }
+
+    // --- HARDWARE D-PAD NAVIGATION ---
+    function updateSoftkeyLabels() {
+        const lsk = document.getElementById('lsk-label'), csk = document.getElementById('csk-label'), rsk = document.getElementById('rsk-label');
+        const map = {
+            "home": ["Options", "OPEN", "Settings"], 
+            "options": ["Select", "OK", "Back"],
+            "channels": ["Select", "OPEN", "Back"], 
+            "headlines": ["Select", "OPEN", "Back"],
+            "reader": ["External", "SCROLL", "Back"], 
+            "settings": ["Save", "EDIT", "Back"]
+        };
+        lsk.innerText = map[state.currentView][0]; 
+        csk.innerText = map[state.currentView][1];
+        rsk.innerText = map[state.currentView][2];
+    }
+
+    function handleLSKClick() {
+        if (state.currentView === "home") switchView('options');
+        else if (["options", "channels", "headlines"].includes(state.currentView)) {
+            const act = document.activeElement;
+            if(act && (act.tagName === 'BUTTON' || act.classList.contains('clickable-item'))) act.click();
+        }
+        else if (state.currentView === "reader") window.open(state.activeArticleUrl, '_blank');
+        else if (state.currentView === "settings") { applySettings(); switchView('home'); }
+    }
+
+    function handleRSKClick() {
+        if (state.currentView === "home") switchView('settings');
+        else if (["options", "channels", "settings"].includes(state.currentView)) switchView('home');
+        else if (state.currentView === "headlines") switchView('channels');
+        else if (state.currentView === "reader") window.history.back(); // Native back helps clear reader state, or fallback below
+    }
+
+    function setupPhysicalKeyBindings() {
+        window.addEventListener('keydown', (e) => {
+            // Softkeys
+            if (['SoftLeft', 'F1'].includes(e.key) || e.keyCode === 118) { e.preventDefault(); handleLSKClick(); return; }
+            if (['SoftRight', 'F2'].includes(e.key) || e.keyCode === 119) { e.preventDefault(); handleRSKClick(); return; }
+            
+            // Standard Back/EndCall override to navigate back
+            if (['Backspace', 'BrowserBack', 'Escape'].includes(e.key) || e.keyCode === 8) {
+                if (state.currentView !== 'home') {
+                    e.preventDefault();
+                    handleRSKClick();
+                    return;
+                }
+            }
+
+            // Shortcuts on home/options
+            if (state.currentView === 'home' || state.currentView === 'options') {
+                if (e.key === '1') { e.preventDefault(); forceRefresh(); }
+                if (e.key === '2') { e.preventDefault(); switchView('channels'); }
+            }
+            
+            // Allow native D-Pad up/down to scroll the view if in reader
+            if (state.currentView === 'reader' && ['ArrowUp', 'ArrowDown'].includes(e.key)) {
+                // Let native browser scrolling happen inside the view
+                const readerView = document.getElementById('view-reader');
+                readerView.scrollTop += (e.key === 'ArrowDown' ? 30 : -30);
+            }
+        });
+        
+        // Handle native back behavior to prevent exiting app when deep in menus
+        window.addEventListener("back", function(e){
+            if (state.currentView !== 'home') {
+                e.preventDefault(); 
+                handleRSKClick();
+            }
+        });
+    }
+</script>
 </body>
 </html>
